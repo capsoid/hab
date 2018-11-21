@@ -1,0 +1,79 @@
+\documentclass{article}
+\usepackage[T1,T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\begin{document}
+\title{Flight Model}
+\author{Vasili V}
+\renewcommand{\today}{November 22, 2018}
+\maketitle
+\section{Lift}
+The buoyant force on a balloon of diameter $d$ with density of content $\rho_{in}$ and environmental density $\rho_{out}$:
+\begin{equation}
+\begin{aligned}
+F_b &= (\rho_{out} - \rho_{in})g\frac{\pi{d}^3}{6},
+\end{aligned}
+\end{equation}
+where content is Helium with density (at STP):
+\begin{equation}
+\begin{aligned}
+\rho_{in} &= 0.1786 && [\si{kg.m^{-3}}].
+\end{aligned}
+\end{equation}
+The environment is standard atmosphere taken from \cite{NASA76} at zero altitude:
+\begin{equation}
+\begin{aligned}
+\rho_{out} &= 1.225 && [\si{kg.m^{-3}}].
+\end{aligned}
+\end{equation}
+under following conditions:
+\begin{equation}
+\begin{aligned}
+p &= \num{1.01325e5} && [\si{kg.m^{-3}}]. \\
+T &= \num{288.15} && [\si{\kelvin}].
+\end{aligned}
+\end{equation}
+Under the conditions Helium density is:
+\begin{equation}
+\begin{aligned}
+\rho_{in} &= 0.1786\cdot\frac{\num{1.01325e5}}{\num{1e5}}\cdot\frac{\num{273.15}}{\num{288.15}} = 0.1715 && [\si{kg.m^{-3}}].
+\end{aligned}
+\end{equation}
+Let's simplify equation (1):
+\begin{equation}
+\begin{aligned}
+F_b &= k_0d^3,
+\end{aligned}
+\end{equation}
+where $k_0$ is:
+\begin{equation}
+\begin{aligned}
+k_0 &= \frac{\pi}{6}\cdot\num{9.81}\cdot(\num{1.225}-\num{0.1715}) = 5.411. && [\si{\newton.m^{-3}}]
+\end{aligned}
+\end{equation}
+For example balloons with diameters $\num{0.36}$, $\num{0.70}$ and $\num{1.15}$ $\si{m}$ get following lifts:
+\begin{equation}
+\begin{aligned}
+F_s &= \num{5.411}\cdot\num{0.36}^3 = 0.2525 [\si{\newton}] = 25.74 [\si{gf}]; \\
+F_m &= \num{5.411}\cdot\num{0.70}^3 = 1.856 [\si{\newton}] = 189.3 [\si{gf}]; \\
+F_b &= \num{5.411}\cdot\num{1.15}^3 = 8.230 [\si{\newton}] = 839.2 [\si{gf}].
+\end{aligned}
+\end{equation}
+These balloons have following volumes:
+\begin{equation}
+\begin{aligned}
+V_s &= 24.43 && [\si{L}]; \\
+V_m &= 179.6 && [\si{L}]; \\
+V_b &= 796.3 && [\si{L}],
+\end{aligned}
+\end{equation}
+which is approximately $\frac{1}{57}$, $\frac{1}{7}$ and $\frac{2}{3}$ of 10 L tank.
+\begin{thebibliography}{9}
+\bibitem{NASA76}
+  NOAA, NASA, USAF,
+  US. Standard Atmosphere,
+  1976
+\end{thebibliography}
+\end{document}
