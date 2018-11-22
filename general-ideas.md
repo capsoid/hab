@@ -17,6 +17,9 @@ Following items need to be worked out:
 - **stand** - [transportable](http://donballon.by/product/telezhka-podstavka-dlya-ballona-10l/) for 0.01m<sup>3</sup> tank (162,16BYR) also there is [cheaper option](http://donballon.by/product/podstavka-pod-ballon-10-litrov/) but it's absent for now;
 - **high-pressure hose** - later we may need the hose to fill big balloons (can be ordered for right connectors and length).
 
+## Pressure-size Balloon Experiment
+The dependency of balloon diameter on pressure difference is required to complete the set of equations for balloon dynamic. The experiment requires pressure sensor. The existing Bosh sensor with [the instructions](http://faradaysclub.com/?p=1325) can be easily used. Additionally, an air hose for aquarium like [this one](https://garfield.by/catalog/akvariumistika/aeratsiya/komplektuyushchie/boyu-rt-shlang.html).
+
 ## Other HAB Links
 - HAB BOM: https://community.balloonchallenge.org/t/hab-supplies-list/677 (Radar Reflector is interesting)
 - HAB electronics: https://www.sparkfun.com/tutorials/185 (1W 900MHz transmitter)
