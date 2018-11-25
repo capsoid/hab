@@ -20,6 +20,9 @@ Following items need to be worked out:
 ## Pressure-size Balloon Experiment
 The dependency of balloon diameter on pressure difference is required to complete the set of equations for balloon dynamic. The experiment requires pressure sensor. The existing Bosh sensor with [the instructions](http://faradaysclub.com/?p=1325) can be easily used. Additionally, an air hose for aquarium like [this one](https://garfield.by/catalog/akvariumistika/aeratsiya/komplektuyushchie/boyu-rt-shlang.html).
 
+## Payload Cooling Experiment
+The payload needs to stay on-line at temperatures -50 - -60 &deg;C. To achieve the temperature range on the ground we can use dry ice from [Bar Portal](http://shop.barportal.by/siropi-pyure-i-kokteylnie-komponenti/ice/dry-ice/).
+
 ## Other HAB Links
 - HAB BOM: https://community.balloonchallenge.org/t/hab-supplies-list/677 (Radar Reflector is interesting)
 - HAB electronics: https://www.sparkfun.com/tutorials/185 (1W 900MHz transmitter)
