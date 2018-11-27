@@ -23,6 +23,18 @@ The dependency of balloon diameter on pressure difference is required to complet
 ## Payload Cooling Experiment
 The payload needs to stay on-line at temperatures -50 - -60 &deg;C. To achieve the temperature range on the ground we can use dry ice from [Bar Portal](http://shop.barportal.by/siropi-pyure-i-kokteylnie-komponenti/ice/dry-ice/).
 
+## Smoke Test
+
+Quick flight test for two balloons:
+- size 0.37m lift 22g (calculated lift for 15 &deg;C and 101.325 kPa - 18.9g; vol 0.0265m<sup>3</sup>);
+- size 0.455m lift 44g (calculated lift for 15 &deg;C and 101.325 kPa - 43.0g; vol 0.0493m<sup>3</sup>).
+
+Karatsevich'es device test:
+
+The device is represented by a piece of nichrome wire with resistance about 0.7 - 1&#x3a9;.
+- power source of 3.5V and current 4.3A the device burns latex within 3 - 4s;
+- batteries (2 AA) 3.1 - 3.2V (drops to 2.5V) and current 2.8A burns latex within similar interval.
+
 ## Other HAB Links
 - HAB BOM: https://community.balloonchallenge.org/t/hab-supplies-list/677 (Radar Reflector is interesting)
 - HAB electronics: https://www.sparkfun.com/tutorials/185 (1W 900MHz transmitter)

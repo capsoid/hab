@@ -4,4 +4,5 @@ The repository contains documentation on building and launching high altitude ba
 
 ## Content
 
-Currently, here is the only file - **general-ideas.md**. The file lists general ideas and directions on the project.
+- **general-ideas.md** - the file lists general ideas and directions on the project;
+- **flight-model** - equations and calculations on balloon motion.
