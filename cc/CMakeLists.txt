@@ -7,3 +7,19 @@ include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
 project(capsoid_controller)
 
 target_sources(app PRIVATE src/main.c)
+
+get_target_property(_src app SOURCES)
+add_custom_target(tags
+    ctags -R "${CMAKE_SOURCE_DIR}/${_src}"
+    "$ENV{ZEPHYR_BASE}/kernel"
+    "$ENV{ZEPHYR_BASE}/lib"
+    "$ENV{ZEPHYR_BASE}/subsys"
+    "$ENV{ZEPHYR_BASE}/drivers"
+    "$ENV{ZEPHYR_BASE}/soc"
+    "$ENV{ZEPHYR_BASE}/arch"
+)
+
+#list (SORT _variableNames)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach()
