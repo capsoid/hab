@@ -10,8 +10,9 @@ target_sources(app PRIVATE src/main.c)
 
 get_target_property(_src app SOURCES)
 add_custom_target(tags
-    ctags -R "${CMAKE_SOURCE_DIR}/${_src}"
+    ctags -R --c-kinds=+p "${CMAKE_SOURCE_DIR}/${_src}"
     "$ENV{ZEPHYR_BASE}/kernel"
+    "$ENV{ZEPHYR_BASE}/include"
     "$ENV{ZEPHYR_BASE}/lib"
     "$ENV{ZEPHYR_BASE}/subsys"
     "$ENV{ZEPHYR_BASE}/drivers"
