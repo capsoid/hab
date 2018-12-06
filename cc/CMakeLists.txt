@@ -6,7 +6,18 @@ set(CONF_FILE prj.conf)
 include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
 project(capsoid_controller)
 
-target_sources(app PRIVATE src/main.c)
+target_sources(app PRIVATE
+    src/main.c
+#    src/RfReceivePacket.c
+#    src/RfReceivePacketLockDetect.c
+#    src/RfReceivePacketSerial.c
+#    src/RfSendPacket.c
+#    src/RfSendPacketLockDetect.c
+#    src/RfSendPacketSerial.c
+#    src/RfWriteRfSettings.c
+)
+
+#include_directories(src)
 
 get_target_property(_src app SOURCES)
 add_custom_target(tags

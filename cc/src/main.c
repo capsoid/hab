@@ -12,9 +12,9 @@
 #include <spi.h>
 #include <stdio.h>
 
-struct spi_config spi_config = {
+struct spi_config cc1101_spi_config = {
     .frequency = 24000000,
-    .operation = SPI_OP_MODE_MASTER | SPI_WORD_SET(8),
+    .operation = SPI_OP_MODE_MASTER | SPI_WORD_SET(8) | SPI_TRANSFER_MSB | SPI_MODE_CPOL | SPI_MODE_CPHA,
     .slave = 0,
     .cs = NULL,
 };
@@ -32,7 +32,7 @@ void main(void)
 
     printf("dev %p name %s\n", bme, bme->config->name);
 
-    spi_write(cc1101, &spi_config, &tx_bufs);
+    spi_write(cc1101, &cc1101_spi_config, &tx_bufs);
 
     while (1) {
         struct sensor_value temp, press, humidity;
