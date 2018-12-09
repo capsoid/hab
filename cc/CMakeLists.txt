@@ -6,22 +6,13 @@ set(CONF_FILE prj.conf)
 include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
 project(capsoid_controller)
 
-target_sources(app PRIVATE
-    src/main.c
-#    src/RfReceivePacket.c
-#    src/RfReceivePacketLockDetect.c
-#    src/RfReceivePacketSerial.c
-#    src/RfSendPacket.c
-#    src/RfSendPacketLockDetect.c
-#    src/RfSendPacketSerial.c
-#    src/RfWriteRfSettings.c
-)
+target_sources(app PRIVATE src/main.c src/cc1101.c)
 
-#include_directories(src)
+include_directories(src)
 
 get_target_property(_src app SOURCES)
 add_custom_target(tags
-    ctags -R --c-kinds=+p "${CMAKE_SOURCE_DIR}/${_src}"
+    ctags -R --c-kinds=+p ${_src}
     "$ENV{ZEPHYR_BASE}/kernel"
     "$ENV{ZEPHYR_BASE}/include"
     "$ENV{ZEPHYR_BASE}/lib"
@@ -29,6 +20,7 @@ add_custom_target(tags
     "$ENV{ZEPHYR_BASE}/drivers"
     "$ENV{ZEPHYR_BASE}/soc"
     "$ENV{ZEPHYR_BASE}/arch"
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
 
 #list (SORT _variableNames)
