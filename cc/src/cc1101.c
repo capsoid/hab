@@ -25,7 +25,7 @@ void cc1101_read_reg(u8_t reg, u8_t *val)
     const struct spi_buf_set tx = { .buffers = &tx_buf, .count = 1 };
 
     int ret = spi_transceive(cc1101_data.spi_dev, cc1101_data.spi_cfg, &tx, &rx);
-    __ASSERT(ret, "spi_transceive failed, %d\n", ret);
+    __ASSERT(!ret, "spi_transceive failed, %d\n", ret);
 }
 
 void cc1101_write_reg(u8_t reg, u8_t val)
@@ -35,7 +35,7 @@ void cc1101_write_reg(u8_t reg, u8_t val)
     const struct spi_buf_set tx = { .buffers = &tx_buf, .count = 1 };
 
     int ret = spi_write(cc1101_data.spi_dev, cc1101_data.spi_cfg, &tx);
-    __ASSERT(ret, "spi_write failed, %d\n", ret);
+    __ASSERT(!ret, "spi_write failed, %d\n", ret);
 }
 
 void cc1101_strobe_cmd(u8_t strobe)
@@ -44,7 +44,7 @@ void cc1101_strobe_cmd(u8_t strobe)
     const struct spi_buf_set tx = { .buffers = &tx_buf, .count = 1 };
 
     int ret = spi_write(cc1101_data.spi_dev, cc1101_data.spi_cfg, &tx);
-    __ASSERT(ret, "spi_write failed, %d\n", ret);
+    __ASSERT(!ret, "spi_write failed, %d\n", ret);
 }
 
 void cc1101_read_status_reg(u8_t reg, u8_t *val)
@@ -57,7 +57,7 @@ void cc1101_read_status_reg(u8_t reg, u8_t *val)
     const struct spi_buf_set tx = { .buffers = &tx_buf, .count = 1 };
 
     int ret = spi_transceive(cc1101_data.spi_dev, cc1101_data.spi_cfg, &tx, &rx);
-    __ASSERT(ret, "spi_transceive failed, %d\n", ret);
+    __ASSERT(!ret, "spi_transceive failed, %d\n", ret);
 }
 
 void cc1101_init(const char *spi_name, const char *cs_port, u32_t cs_pin)
@@ -87,13 +87,13 @@ void cc1101_init(const char *spi_name, const char *cs_port, u32_t cs_pin)
     cc1101_data.cs_pin = cs_pin;
 
     // power on reset procedure
-    ret = gpio_pin_configure(spi_gpio, cs_pin, GPIO_DIR_OUT); __ASSERT_NO_MSG(ret);
+    ret = gpio_pin_configure(spi_gpio, cs_pin, GPIO_DIR_OUT); __ASSERT_NO_MSG(!ret);
 
-    ret = gpio_pin_write(spi_gpio, cs_pin, 1);                __ASSERT_NO_MSG(ret);
+    ret = gpio_pin_write(spi_gpio, cs_pin, 1);                __ASSERT_NO_MSG(!ret);
     k_busy_wait(1);
-    ret = gpio_pin_write(spi_gpio, cs_pin, 0);                __ASSERT_NO_MSG(ret);
+    ret = gpio_pin_write(spi_gpio, cs_pin, 0);                __ASSERT_NO_MSG(!ret);
     k_busy_wait(1);
-    ret = gpio_pin_write(spi_gpio, cs_pin, 1);                __ASSERT_NO_MSG(ret);
+    ret = gpio_pin_write(spi_gpio, cs_pin, 1);                __ASSERT_NO_MSG(!ret);
     k_busy_wait(41);
     cc1101_reset();
 }
@@ -152,7 +152,7 @@ void cc1101_burst_write(u8_t addr, u8_t *buf, u8_t size)
     const struct spi_buf_set tx = { .buffers = tx_buf, .count = 2 };
 
     int ret = spi_write(cc1101_data.spi_dev, cc1101_data.spi_cfg, &tx);
-    __ASSERT(ret, "spi_write failed, %d\n", ret);
+    __ASSERT(!ret, "spi_write failed, %d\n", ret);
 }
 
 void cc1101_burst_read(u8_t addr, u8_t *buf, u8_t size)
@@ -165,5 +165,5 @@ void cc1101_burst_read(u8_t addr, u8_t *buf, u8_t size)
     const struct spi_buf_set tx = { .buffers = &tx_buf, .count = 1 };
 
     int ret = spi_transceive(cc1101_data.spi_dev, cc1101_data.spi_cfg, &tx, &rx);
-    __ASSERT(ret, "spi_transceive failed, %d\n", ret);
+    __ASSERT(!ret, "spi_transceive failed, %d\n", ret);
 }
