@@ -16,19 +16,6 @@
 
 #include "cc1101.h"
 
-struct device *bme280 = NULL;
-
-void main(void)
-{
-    printk("[%s  %s] Hello World from %s!\n", __DATE__, __TIME__, CONFIG_BOARD);
-    cc1101_init("SPI_1", "GPIOA", 1);
-
-    while (1)
-    {
-        k_sleep(1000);
-    }
-}
-
 #define PR(fmt, ...)						\
     shell_fprintf(shell, SHELL_NORMAL, fmt, ##__VA_ARGS__)
 #define PR_ERROR(fmt, ...)					\
@@ -38,15 +25,27 @@ void main(void)
 #define PR_WARNING(fmt, ...)					\
     shell_fprintf(shell, SHELL_WARNING, fmt, ##__VA_ARGS__)
 
+struct device *bme280;
+
+void main(void)
+{
+    printk("[%s  %s] Hello World from %s!\n", __DATE__, __TIME__, CONFIG_BOARD);
+
+    bme280 = device_get_binding("BME280"); __ASSERT_NO_MSG(bme280);
+
+    //__ASSERT(0, "fail\n");
+
+    cc1101_init("SPI_1", "GPIOA", 1, "GPIOB", 2);
+
+    while (1)
+    {
+        k_sleep(1000);
+    }
+}
+
 static int cmd_bme280_read(const struct shell *shell, size_t argc, char **argv)
 {
     struct sensor_value temp, press, humidity;
-
-    if (!bme280)
-    {
-        bme280 = device_get_binding("BME280");
-        __ASSERT_NO_MSG(bme280);
-    }
 
     sensor_sample_fetch(bme280);
     sensor_channel_get(bme280, SENSOR_CHAN_AMBIENT_TEMP, &temp);
@@ -65,7 +64,29 @@ static int cmd_cc1101_reset(const struct shell *shell, size_t argc, char **argv)
     ARG_UNUSED(argc);
     ARG_UNUSED(argv);
 
-    shell_print(shell, "pong2");
+    cc1101_reset();
+
+    return 0;
+}
+
+static int cmd_cc1101_rr(const struct shell *shell, size_t argc, char **argv)
+{
+    ARG_UNUSED(argc);
+    ARG_UNUSED(argv);
+
+    u8_t v;
+    cc1101_read_reg(0, &v);
+
+    return 0;
+}
+
+static int cmd_cc1101_wr(const struct shell *shell, size_t argc, char **argv)
+{
+    ARG_UNUSED(argc);
+    ARG_UNUSED(argv);
+
+    cc1101_write_reg(0, 0);
+
     return 0;
 }
 
@@ -78,6 +99,8 @@ SHELL_CREATE_STATIC_SUBCMD_SET(bme280_commands)
 SHELL_CREATE_STATIC_SUBCMD_SET(cc1101_commands)
 {
     SHELL_CMD(reset, NULL, "reset RF", cmd_cc1101_reset),
+    SHELL_CMD(rr, NULL, "'cc1101 rr <reg>' reads cc1101 <reg> value", cmd_cc1101_rr),
+    SHELL_CMD(wr, NULL, "'cc1101 wr <reg> <val>' writes cc1101 <reg> with <val>", cmd_cc1101_wr),
     SHELL_SUBCMD_SET_END
 };
 

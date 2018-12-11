@@ -9,8 +9,10 @@
 struct cc1101_data {
     struct device *spi_dev;
     struct spi_config *spi_cfg;
-    struct device *spi_gpio;
+    struct device *spi_cs_port;
+    struct device *spi_chip_ready_port;
     u32_t cs_pin;
+    u32_t chip_ready_pin;
 };
 
 static struct cc1101_data cc1101_data;
@@ -60,7 +62,8 @@ void cc1101_read_status_reg(u8_t reg, u8_t *val)
     __ASSERT(!ret, "spi_transceive failed, %d\n", ret);
 }
 
-void cc1101_init(const char *spi_name, const char *cs_port, u32_t cs_pin)
+void cc1101_init(const char *spi_name, const char *cs_port, u32_t cs_pin,
+                 const char *chip_ready_port, u32_t chip_ready_pin)
 {
     int ret;
     static struct spi_cs_control spi_cs;
@@ -69,10 +72,13 @@ void cc1101_init(const char *spi_name, const char *cs_port, u32_t cs_pin)
     struct device *spi_dev = device_get_binding(spi_name);
     __ASSERT(spi_dev, "Binding to %s failed.", spi_name);
 
-    struct device *spi_gpio = device_get_binding(cs_port);
-    __ASSERT(spi_gpio, "Binding to %s failed.", cs_port);
+    struct device *spi_cs_port = device_get_binding(cs_port);
+    __ASSERT(spi_cs_port, "Binding to %s failed.", cs_port);
 
-    spi_cs.gpio_dev = spi_gpio;
+    struct device *spi_chip_ready_port = device_get_binding(chip_ready_port);
+    __ASSERT(spi_chip_ready_port, "Binding to %s failed.", chip_ready_port);
+
+    spi_cs.gpio_dev = spi_cs_port;
     spi_cs.gpio_pin = cs_pin;
     spi_cs.delay = 200; // uS, time to wait for MISO goes low after CS went low
 
@@ -83,19 +89,43 @@ void cc1101_init(const char *spi_name, const char *cs_port, u32_t cs_pin)
 
     cc1101_data.spi_dev = spi_dev;
     cc1101_data.spi_cfg = &spi_cfg;
-    cc1101_data.spi_gpio = spi_gpio;
+    cc1101_data.spi_cs_port = spi_cs_port;
+    cc1101_data.spi_chip_ready_port = spi_chip_ready_port;
     cc1101_data.cs_pin = cs_pin;
+    cc1101_data.chip_ready_pin = chip_ready_pin;
 
     // power on reset procedure
-    ret = gpio_pin_configure(spi_gpio, cs_pin, GPIO_DIR_OUT); __ASSERT_NO_MSG(!ret);
+    ret = gpio_pin_configure(spi_cs_port, cs_pin, GPIO_DIR_OUT);
+    __ASSERT_NO_MSG(!ret);
+    ret = gpio_pin_configure(spi_chip_ready_port, chip_ready_pin, GPIO_DIR_IN);
+    __ASSERT_NO_MSG(!ret);
 
-    ret = gpio_pin_write(spi_gpio, cs_pin, 1);                __ASSERT_NO_MSG(!ret);
+    #define _CS(x) do { \
+        ret = gpio_pin_write(spi_cs_port, cs_pin, x);  __ASSERT_NO_MSG(!ret); \
+    } while (0);
+
+    _CS(1);
     k_busy_wait(1);
-    ret = gpio_pin_write(spi_gpio, cs_pin, 0);                __ASSERT_NO_MSG(!ret);
+    _CS(0);
     k_busy_wait(1);
-    ret = gpio_pin_write(spi_gpio, cs_pin, 1);                __ASSERT_NO_MSG(!ret);
+    _CS(1);
     k_busy_wait(41);
+
+    // TODO: wait for CHIP_RDYn according to power on reset procedure described in manual
+    /*
+    _CS(0)
+
+    u32_t val;
+    ret = gpio_pin_read(spi_chip_ready_port, chip_ready_pin, &val);
+    __ASSERT_NO_MSG(!ret);
+
+    _CS(1);
+    */
+
+    k_sleep(10);
+
     cc1101_reset();
+
 }
 
 void cc1101_reset(void)
