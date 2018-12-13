@@ -31,11 +31,11 @@ void main(void)
 {
     printk("[%s  %s] Hello World from %s!\n", __DATE__, __TIME__, CONFIG_BOARD);
 
-    bme280 = device_get_binding("BME280"); __ASSERT_NO_MSG(bme280);
+    //bme280 = device_get_binding("BME280"); __ASSERT_NO_MSG(bme280);
 
     //__ASSERT(0, "fail\n");
 
-    cc1101_init("SPI_1", "GPIOA", 1, "GPIOB", 2);
+    cc1101_init("SPI_1", "GPIOA", 3, 0, 2, 1);
 
     while (1)
     {

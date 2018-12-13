@@ -42,8 +42,8 @@ typedef struct {
     u8_t PKTLEN;    // Packet length.
 } cc1101_cfg_t;
 
-void cc1101_init(const char *spi_name, const char *cs_port, u32_t cs_pin,
-                 const char *chip_ready_port, u32_t chip_ready_pin);
+void cc1101_init(const char *spi_name, const char *gpio_port, u32_t cs_pin,
+                 u32_t chip_ready_pin, u32_t gdo0_pin, u32_t gdo2_pin);
 void cc1101_reset(void);
 void cc1101_configure(const cc1101_cfg_t *cfg);
 void cc1101_strobe_cmd(u8_t strobe);
