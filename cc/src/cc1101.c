@@ -93,16 +93,20 @@ void cc1101_init(const char *spi_name, const char *gpio_port, u32_t cs_pin,
     cc1101_data.gdo0_pin = gdo0_pin;
     cc1101_data.gdo2_pin = gdo2_pin;
 
-    // power on reset procedure
     ret = gpio_pin_configure(spi_gpio_port, cs_pin, GPIO_DIR_OUT);
     __ASSERT_NO_MSG(!ret);
     ret = gpio_pin_configure(spi_gpio_port, chip_ready_pin, GPIO_DIR_IN);
+    __ASSERT_NO_MSG(!ret);
+    ret = gpio_pin_configure(spi_gpio_port, gdo0_pin, GPIO_DIR_IN);
+    __ASSERT_NO_MSG(!ret);
+    ret = gpio_pin_configure(spi_gpio_port, gdo2_pin, GPIO_DIR_IN);
     __ASSERT_NO_MSG(!ret);
 
     #define _CS(x) do { \
         ret = gpio_pin_write(spi_gpio_port, cs_pin, x);  __ASSERT_NO_MSG(!ret); \
     } while (0);
 
+    // power on reset procedure
     _CS(1);
     k_busy_wait(1);
     _CS(0);
@@ -110,21 +114,21 @@ void cc1101_init(const char *spi_name, const char *gpio_port, u32_t cs_pin,
     _CS(1);
     k_busy_wait(41);
 
+    _CS(0)
+
     // TODO: wait for CHIP_RDYn according to power on reset procedure described in manual
     /*
-    _CS(0)
 
     u32_t val;
     ret = gpio_pin_read(spi_chip_ready_port, chip_ready_pin, &val);
     __ASSERT_NO_MSG(!ret);
 
-    _CS(1);
     */
 
-    k_sleep(10);
+    k_busy_wait(100);
+    _CS(1);
 
     cc1101_reset();
-
 }
 
 void cc1101_reset(void)
