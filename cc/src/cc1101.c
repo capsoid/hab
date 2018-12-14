@@ -81,7 +81,7 @@ void cc1101_init(const char *spi_name, const char *gpio_port, u32_t cs_pin,
     spi_cs.delay = 200; // uS, time to wait for MISO goes low after CS went low
 
     spi_cfg.frequency = 6000000;
-    spi_cfg.operation = SPI_OP_MODE_MASTER | SPI_WORD_SET(8) | SPI_TRANSFER_MSB | SPI_MODE_CPOL | SPI_MODE_CPHA;
+    spi_cfg.operation = SPI_OP_MODE_MASTER | SPI_WORD_SET(8) | SPI_TRANSFER_MSB;
     spi_cfg.slave = 0;
     spi_cfg.cs = &spi_cs;
 
