@@ -41,3 +41,4 @@ The device is represented by a piece of nichrome wire with resistance about 0.7 
 - HAB eqiupment enclosure and heater: https://www.sparkfun.com/tutorials/188
 - HAB 29MHz 50mW transmitter (200miles distance) https://www.swharden.com/wp/2010-07-14-high-altitude-balloon-transmitter/
 - HAB Flight Planner: http://astra-planner.soton.ac.uk/
+- Flight Predictor: http://predict.habhub.org

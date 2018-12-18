@@ -1,6 +1,6 @@
 # Size-Pressure Experiment
 
-The directory contains data on size-pressure dependency measurements. The size and pressure measured both for balloon inflation and deflation. A 18" balloon has been used in the experiment.
+The directory contains data on size-pressure dependency measurements. The size and pressure measured both for balloon inflation and deflation. 18" and 36" balloons have been used in the experiment.
 
 # Schema
 
