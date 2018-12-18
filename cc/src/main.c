@@ -34,7 +34,15 @@ void main(void)
     printk("[%s  %s] Hello World from %s!\n", __DATE__, __TIME__, CONFIG_BOARD);
 
     bme280 = device_get_binding("BME280");
+    if (!bme280)
+    {
+        printk("Failed to init BME280!\n");
+    }
     mpu6050 = device_get_binding("MPU6050");
+    if (!mpu6050)
+    {
+        printk("Failed to init MPU6050!\n");
+    }
 
     //__ASSERT(0, "fail\n");
 
@@ -53,18 +61,27 @@ static int cmd_mpu6050_read(const struct shell *shell, size_t argc, char **argv)
     struct sensor_value temp;
 
     sensor_sample_fetch(mpu6050);
-/*
-    sensor_channel_get(mpu6050, SENSOR_CHAN_ACCEL_XYZ
-    sensor_channel_get(mpu6050, SENSOR_CHAN_ACCEL_X
-    sensor_channel_get(mpu6050, SENSOR_CHAN_ACCEL_Y
-    sensor_channel_get(mpu6050, SENSOR_CHAN_ACCEL_Z
-    sensor_channel_get(mpu6050, SENSOR_CHAN_GYRO_XYZ
-    sensor_channel_get(mpu6050, SENSOR_CHAN_GYRO_X
-    sensor_channel_get(mpu6050, SENSOR_CHAN_GYRO_Y
-    sensor_channel_get(mpu6050, SENSOR_CHAN_GYRO_Z
-*/
+
+    sensor_channel_get(mpu6050, SENSOR_CHAN_ACCEL_X, &temp);
+    PR("A X: %d.%06d\n", temp.val1, temp.val2);
+
+    sensor_channel_get(mpu6050, SENSOR_CHAN_ACCEL_Y, &temp);
+    PR("A Y: %d.%06d\n", temp.val1, temp.val2);
+
+    sensor_channel_get(mpu6050, SENSOR_CHAN_ACCEL_Z, &temp);
+    PR("A Z: %d.%06d\n", temp.val1, temp.val2);
+
+    sensor_channel_get(mpu6050, SENSOR_CHAN_GYRO_X, &temp);
+    PR("G X: %d.%06d\n", temp.val1, temp.val2);
+
+    sensor_channel_get(mpu6050, SENSOR_CHAN_GYRO_Y, &temp);
+    PR("G Y: %d.%06d\n", temp.val1, temp.val2);
+
+    sensor_channel_get(mpu6050, SENSOR_CHAN_GYRO_Z, &temp);
+    PR("G Z: %d.%06d\n", temp.val1, temp.val2);
+
     sensor_channel_get(mpu6050, SENSOR_CHAN_DIE_TEMP, &temp);
-    PR("temp: %d.%06d; temp.val1, temp.val2", temp.val1, temp.val2);
+    PR("T: %d.%06d\n", temp.val1, temp.val2);
 
     return 0;
 }
@@ -80,7 +97,7 @@ static int cmd_bme280_read(const struct shell *shell, size_t argc, char **argv)
     sensor_channel_get(bme280, SENSOR_CHAN_PRESS, &press);
     sensor_channel_get(bme280, SENSOR_CHAN_HUMIDITY, &humidity);
 
-    PR("temp: %d.%06d; press: %d.%06d; humidity: %d.%06d\n",
+    PR("T: %d.%06d; press: %d.%06d; humidity: %d.%06d\n",
             temp.val1, temp.val2, press.val1, press.val2,
             humidity.val1, humidity.val2);
 
