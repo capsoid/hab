@@ -12,6 +12,7 @@
 #include <sensor.h>
 #include <shell/shell.h>
 #include <spi.h>
+#include <i2c.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -52,6 +53,23 @@ void main(void)
     {
         k_sleep(1000);
     }
+}
+
+static int cmd_mpu6050_reset(const struct shell *shell, size_t argc, char **argv)
+{
+       struct device *i2c = device_get_binding("I2C_1");
+       __ASSERT_NO_MSG(i2c);
+       u8_t v;
+
+       if (i2c_reg_write_byte(i2c, 0x68, 0x6B, 0x80) < 0) {
+           printk("Failed to wake up chip.");
+       }
+       k_sleep(10);
+       if (i2c_reg_write_byte(i2c, 0x68, 0x6B, 0x00) < 0) {
+           printk("Failed to wake up chip.");
+       }
+
+       return 0;
 }
 
 static int cmd_mpu6050_read(const struct shell *shell, size_t argc, char **argv)
@@ -160,6 +178,7 @@ static int cmd_cc1101_wr(const struct shell *shell, size_t argc, char **argv)
 SHELL_CREATE_STATIC_SUBCMD_SET(mpu6050_commands)
 {
     SHELL_CMD(read, NULL, "read mpu6050", cmd_mpu6050_read),
+    SHELL_CMD(reset, NULL, "reset mpu6050", cmd_mpu6050_reset),
     SHELL_SUBCMD_SET_END
 };
 
