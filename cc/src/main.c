@@ -60,7 +60,10 @@ static int cmd_mpu6050_read(const struct shell *shell, size_t argc, char **argv)
 
     struct sensor_value temp;
 
-    sensor_sample_fetch(mpu6050);
+    if (sensor_sample_fetch(mpu6050))
+    {
+        printk("Failed to read data from mpu6050\n.");
+    }
 
     sensor_channel_get(mpu6050, SENSOR_CHAN_ACCEL_X, &temp);
     PR("A X: %d.%06d\n", temp.val1, temp.val2);
@@ -93,6 +96,11 @@ static int cmd_bme280_read(const struct shell *shell, size_t argc, char **argv)
     struct sensor_value temp, press, humidity;
 
     sensor_sample_fetch(bme280);
+    if (sensor_sample_fetch(bme280))
+    {
+        printk("Failed to read data from bm280\n.");
+    }
+
     sensor_channel_get(bme280, SENSOR_CHAN_AMBIENT_TEMP, &temp);
     sensor_channel_get(bme280, SENSOR_CHAN_PRESS, &press);
     sensor_channel_get(bme280, SENSOR_CHAN_HUMIDITY, &humidity);
