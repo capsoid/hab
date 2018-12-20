@@ -47,7 +47,7 @@ void main(void)
 
     //__ASSERT(0, "fail\n");
 
-    cc1101_init("SPI_1", "GPIOA", 3, 0, 2, 1);
+    //cc1101_init("SPI_1", "GPIOA", 3, 0, 2, 1);
 
     while (1)
     {
