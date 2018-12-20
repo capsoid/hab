@@ -59,12 +59,19 @@ static int cmd_mpu6050_reset(const struct shell *shell, size_t argc, char **argv
 {
        struct device *i2c = device_get_binding("I2C_1");
        __ASSERT_NO_MSG(i2c);
-       u8_t v;
 
        if (i2c_reg_write_byte(i2c, 0x68, 0x6B, 0x80) < 0) {
            printk("Failed to wake up chip.");
        }
+       /*
+       k_busy_wait(100);
+       u8_t v;
+       if (i2c_reg_read_byte(i2c, 0x68, 0x6B, &v) < 0) {
+           printk("Failed to wake up chip.");
+       }
+       */
        k_sleep(10);
+
        if (i2c_reg_write_byte(i2c, 0x68, 0x6B, 0x00) < 0) {
            printk("Failed to wake up chip.");
        }
@@ -76,33 +83,25 @@ static int cmd_mpu6050_read(const struct shell *shell, size_t argc, char **argv)
 {
     __ASSERT_NO_MSG(mpu6050);
 
-    struct sensor_value temp;
+    struct sensor_value temp[3];
 
     if (sensor_sample_fetch(mpu6050))
     {
         printk("Failed to read data from mpu6050\n.");
     }
 
-    sensor_channel_get(mpu6050, SENSOR_CHAN_ACCEL_X, &temp);
-    PR("A X: %d.%06d\n", temp.val1, temp.val2);
+    sensor_channel_get(mpu6050, SENSOR_CHAN_ACCEL_XYZ, &temp[0]);
+    PR("A X: %d.%06d\n", temp[0].val1, abs(temp[0].val2));
+    PR("A Y: %d.%06d\n", temp[1].val1, abs(temp[1].val2));
+    PR("A Z: %d.%06d\n", temp[2].val1, abs(temp[2].val2));
 
-    sensor_channel_get(mpu6050, SENSOR_CHAN_ACCEL_Y, &temp);
-    PR("A Y: %d.%06d\n", temp.val1, temp.val2);
+    sensor_channel_get(mpu6050, SENSOR_CHAN_GYRO_XYZ, &temp[0]);
+    PR("G X: %d.%06d\n", temp[0].val1, abs(temp[0].val2));
+    PR("G Y: %d.%06d\n", temp[1].val1, abs(temp[1].val2));
+    PR("G Z: %d.%06d\n", temp[2].val1, abs(temp[2].val2));
 
-    sensor_channel_get(mpu6050, SENSOR_CHAN_ACCEL_Z, &temp);
-    PR("A Z: %d.%06d\n", temp.val1, temp.val2);
-
-    sensor_channel_get(mpu6050, SENSOR_CHAN_GYRO_X, &temp);
-    PR("G X: %d.%06d\n", temp.val1, temp.val2);
-
-    sensor_channel_get(mpu6050, SENSOR_CHAN_GYRO_Y, &temp);
-    PR("G Y: %d.%06d\n", temp.val1, temp.val2);
-
-    sensor_channel_get(mpu6050, SENSOR_CHAN_GYRO_Z, &temp);
-    PR("G Z: %d.%06d\n", temp.val1, temp.val2);
-
-    sensor_channel_get(mpu6050, SENSOR_CHAN_DIE_TEMP, &temp);
-    PR("T: %d.%06d\n", temp.val1, temp.val2);
+    sensor_channel_get(mpu6050, SENSOR_CHAN_DIE_TEMP, &temp[0]);
+    PR("T: %d.%06d\n", temp[0].val1, abs(temp[0].val2));
 
     return 0;
 }
