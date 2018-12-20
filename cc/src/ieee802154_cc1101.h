@@ -14,11 +14,13 @@
 #include <atomic.h>
 #include <spi.h>
 
-#include <ieee802154/cc1101.h>
+#include "cc1101.h"
 
 /* Runtime context structure
  ***************************
  */
+
+#define CONFIG_IEEE802154_CC1101_RX_STACK_SIZE 512
 
 struct cc1101_context {
 	struct net_if *iface;
@@ -120,5 +122,15 @@ DEFINE_STROBE_INSTRUCTION(sfrx, CC1101_INS_SFRX)
 DEFINE_STROBE_INSTRUCTION(sftx, CC1101_INS_SFTX)
 DEFINE_STROBE_INSTRUCTION(sworrst, CC1101_INS_SWORRST)
 DEFINE_STROBE_INSTRUCTION(snop, CC1101_INS_SNOP)
+
+struct device *cc1101_init(void);
+bool rf_install_settings(struct device *dev, const struct cc1101_rf_registers_set *rf_settings);
+int power_on_and_setup(struct device *dev);
+int cc1101_tx(struct device *dev, struct net_pkt *pkt, struct net_buf *frag);
+int cc1101_start(struct device *dev);
+int cc1101_stop(struct device *dev);
+int cc1101_set_txpower(struct device *dev, s16_t dbm);
+int cc1101_set_channel(struct device *dev, u16_t channel);
+int cc1101_cca(struct device *dev);
 
 #endif /* __IEEE802154_CC1101_H__ */

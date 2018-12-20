@@ -47,7 +47,7 @@ void main(void)
 
     //__ASSERT(0, "fail\n");
 
-    //cc1101_init("SPI_1", "GPIOA", 3, 0, 2, 1);
+    cc1101_init();
 
     while (1)
     {
@@ -134,7 +134,7 @@ static int cmd_cc1101_reset(const struct shell *shell, size_t argc, char **argv)
     ARG_UNUSED(argc);
     ARG_UNUSED(argv);
 
-    cc1101_reset();
+   // cc1101_reset();
 
     return 0;
 }
@@ -144,7 +144,7 @@ static int cmd_cc1101_init(const struct shell *shell, size_t argc, char **argv)
     ARG_UNUSED(argc);
     ARG_UNUSED(argv);
 
-    cc1101_init("SPI_1", "GPIOA", 3, 0, 2, 1);
+  //  cc1101_init("SPI_1", "GPIOA", 3, 0, 2, 1);
 
     return 0;
 }
@@ -158,7 +158,7 @@ static int cmd_cc1101_rr(const struct shell *shell, size_t argc, char **argv)
 
     u8_t v;
     u8_t reg = atoi(argv[1]);
-    cc1101_read_reg(reg, &v);
+ //   cc1101_read_reg(reg, &v);
     PR("reg %02x = %u\n", reg, v);
 
     return 0;
@@ -169,7 +169,7 @@ static int cmd_cc1101_wr(const struct shell *shell, size_t argc, char **argv)
     ARG_UNUSED(argc);
     ARG_UNUSED(argv);
 
-    cc1101_write_reg(0, 0);
+//    cc1101_write_reg(0, 0);
 
     return 0;
 }
