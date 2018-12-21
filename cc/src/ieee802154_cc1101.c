@@ -31,12 +31,20 @@
 #include "ieee802154_cc1101.h"
 #include "ieee802154_cc1101_rf.h"
 
-#define CONFIG_IEEE802154_CC1101_SPI_DRV_NAME "SPI_1"
-#define CONFIG_IEEE802154_CC1101_SPI_FREQ 6000
-#define CONFIG_IEEE802154_CC1101_GPIO_SPI_CS_DRV_NAME "GPIOA"
-#define CONFIG_IEEE802154_CC1101_GPIO_SPI_CS_PIN 0
+#define CFG_CC1101_DRV_NAME "CC1101"
+#define CFG_CC1101_SPI_DRV_NAME "SPI_1"
+#define CFG_CC1101_SPI_FREQ 6000
+#define CFG_CC1101_GPIO_SPI_CS_DRV_NAME "GPIOA"
+#define CFG_CC1101_GPIO_SPI_CS_PIN 0
+#define CFG_CC1101_GPIO_GDO0_DRV_NAME "GPIOA"
+#define CFG_CC1101_GPIO_GDO0_PIN 0
+#define CFG_CC1101_GPIO_GDO1_DRV_NAME "GPIOA"
+#define CFG_CC1101_GPIO_GDO1_PIN 0
+#define CFG_CC1101_RX_STACK_SIZE 1024
 
-static struct spi_cs_control cs_ctrl;
+static struct spi_cs_control            cs_ctrl;
+static struct cc1101_gpio_configuration gpios[CC1101_GPIO_IDX_MAX];
+static struct cc1101_context            cc1101_context;
 
 /***********************
  * Debugging functions *
@@ -193,6 +201,24 @@ static u8_t get_status(struct cc1101_context *ctx)
 
 struct cc1101_gpio_configuration *cc1101_configure_gpios(void)
 {
+    struct device *gdo0_dev = device_get_binding(CFG_CC1101_GPIO_GDO0_DRV_NAME);
+    if (!gdo0_dev) {
+        SYS_LOG_ERR("Unable to get GDO0 GPIO device");
+        return NULL;
+    }
+
+    struct device *gdo1_dev = device_get_binding(CFG_CC1101_GPIO_GDO1_DRV_NAME);
+    if (!gdo1_dev) {
+        SYS_LOG_ERR("Unable to get GDO1 GPIO device");
+        return NULL;
+    }
+
+    gpios[CC1101_GPIO_IDX_GPIO0].dev = gdo0_dev;
+    gpios[CC1101_GPIO_IDX_GPIO0].pin = CFG_CC1101_GPIO_GDO0_PIN;
+    gpios[CC1101_GPIO_IDX_GPIO1].dev = gdo1_dev;
+    gpios[CC1101_GPIO_IDX_GPIO1].pin = CFG_CC1101_GPIO_GDO1_PIN;
+
+    return &gpios[0];
 }
 
 static inline void gdo_int_handler(struct device *port,
@@ -732,43 +758,39 @@ static int configure_spi(struct device *dev)
     struct cc1101_context *cc1101 = dev->driver_data;
 
     cc1101->spi = device_get_binding(
-            CONFIG_IEEE802154_CC1101_SPI_DRV_NAME);
+            CFG_CC1101_SPI_DRV_NAME);
     if (!cc1101->spi) {
         SYS_LOG_ERR("Unable to get SPI device");
         return -ENODEV;
     }
 
-    if (IS_ENABLED(CONFIG_IEEE802154_CC1101_GPIO_SPI_CS)) {
+    if (IS_ENABLED(CFG_CC1101_GPIO_SPI_CS)) {
         cs_ctrl.gpio_dev = device_get_binding(
-                CONFIG_IEEE802154_CC1101_GPIO_SPI_CS_DRV_NAME);
+                CFG_CC1101_GPIO_SPI_CS_DRV_NAME);
         if (!cs_ctrl.gpio_dev) {
             SYS_LOG_ERR("Unable to get GPIO SPI CS device");
             return -ENODEV;
         }
 
-        cs_ctrl.gpio_pin = CONFIG_IEEE802154_CC1101_GPIO_SPI_CS_PIN;
+        cs_ctrl.gpio_pin = CFG_CC1101_GPIO_SPI_CS_PIN;
         cs_ctrl.delay = 0;
 
         cc1101->spi_cfg.cs = &cs_ctrl;
 
         SYS_LOG_DBG("SPI GPIO CS configured on %s:%u",
-                CONFIG_IEEE802154_CC1101_GPIO_SPI_CS_DRV_NAME,
-                CONFIG_IEEE802154_CC1101_GPIO_SPI_CS_PIN);
+                CFG_CC1101_GPIO_SPI_CS_DRV_NAME,
+                CFG_CC1101_GPIO_SPI_CS_PIN);
     }
 
     cc1101->spi_cfg.operation = SPI_WORD_SET(8);
-    cc1101->spi_cfg.frequency = CONFIG_IEEE802154_CC1101_SPI_FREQ;
+    cc1101->spi_cfg.frequency = CFG_CC1101_SPI_FREQ;
 
     return 0;
 }
 
-struct device *cc1101_init(void)
+static int cc1101_init(struct device *dev)
 {
-    static struct cc1101_context cc1101_context = {0};
-    static struct device device = {0};
-    struct cc1101_context *cc1101 = &cc1101_context;
-    struct device *dev = &device;
-    dev->driver_data = cc1101;
+    struct cc1101_context *cc1101 = dev->driver_data;
 
     atomic_set(&cc1101->tx, 0);
     atomic_set(&cc1101->tx_start, 0);
@@ -779,30 +801,29 @@ struct device *cc1101_init(void)
     cc1101->gpios = cc1101_configure_gpios();
     if (!cc1101->gpios) {
         SYS_LOG_ERR("Configuring GPIOS failed");
-        //return -EIO;
-        return 0;
+        return -EIO;
     }
 
     if (configure_spi(dev) != 0) {
         SYS_LOG_ERR("Configuring SPI failed");
-        //return -EIO;
-        return 0;
+        return -EIO;
     }
 
     SYS_LOG_DBG("GPIO and SPI configured");
 
     if (power_on_and_setup(dev) != 0) {
         SYS_LOG_ERR("Configuring CC1101 failed");
-        //return -EIO;
-        return 0;
+        return -EIO;
     }
 
     k_thread_create(&cc1101->rx_thread, cc1101->rx_stack,
-            CONFIG_IEEE802154_CC1101_RX_STACK_SIZE,
+            CFG_CC1101_RX_STACK_SIZE,
             (k_thread_entry_t)cc1101_rx,
             dev, NULL, NULL, K_PRIO_COOP(2), 0, 0);
 
     SYS_LOG_INF("CC1101 initialized");
 
-    return dev;
+    return 0;
 }
+
+DEVICE_INIT(cc1101, CFG_CC1101_DRV_NAME, cc1101_init, &cc1101_context, NULL, APPLICATION, 0);

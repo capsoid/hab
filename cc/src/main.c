@@ -29,6 +29,7 @@
 
 struct device *bme280;
 struct device *mpu6050;
+struct device *cc1101;
 
 void main(void)
 {
@@ -39,15 +40,20 @@ void main(void)
     {
         printk("Failed to init BME280!\n");
     }
+
     mpu6050 = device_get_binding("MPU6050");
     if (!mpu6050)
     {
         printk("Failed to init MPU6050!\n");
     }
 
-    //__ASSERT(0, "fail\n");
+    cc1101 = device_get_binding("CC1101");
+    if (!mpu6050)
+    {
+        printk("Failed to init CC1101!\n");
+    }
 
-    cc1101_init();
+    //__ASSERT(0, "fail\n");
 
     while (1)
     {
@@ -156,10 +162,10 @@ static int cmd_cc1101_rr(const struct shell *shell, size_t argc, char **argv)
 
     __ASSERT(argc == 2, "wrong format");
 
-    u8_t v;
-    u8_t reg = atoi(argv[1]);
+    //u8_t v;
+    //u8_t reg = atoi(argv[1]);
  //   cc1101_read_reg(reg, &v);
-    PR("reg %02x = %u\n", reg, v);
+    //PR("reg %02x = %u\n", reg, v);
 
     return 0;
 }
