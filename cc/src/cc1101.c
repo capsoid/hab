@@ -133,9 +133,10 @@ void cc1101_init(const char *spi_name, const char *gpio_port, u32_t cs_pin,
 
 void cc1101_reset(void)
 {
-    cc1101_strobe_cmd(CC1101_SRES);
+    //cc1101_strobe_cmd(CC1101_SRES);
 }
 
+/*
 void cc1101_configure(const cc1101_cfg_t *cfg)
 {
     cc1101_write_reg(CC1101_FSCTRL1,  cfg->FSCTRL1);
@@ -174,6 +175,7 @@ void cc1101_configure(const cc1101_cfg_t *cfg)
     cc1101_write_reg(CC1101_ADDR,     cfg->ADDR);
     cc1101_write_reg(CC1101_PKTLEN,   cfg->PKTLEN);
 }
+    */
 
 void cc1101_burst_write(u8_t addr, u8_t *buf, u8_t size)
 {

@@ -13,6 +13,7 @@
 #include <linker/sections.h>
 #include <atomic.h>
 #include <spi.h>
+#include <gpio.h>
 
 #include "cc1101.h"
 
@@ -125,7 +126,8 @@ DEFINE_STROBE_INSTRUCTION(snop, CC1101_INS_SNOP)
 
 bool rf_install_settings(struct device *dev, const struct cc1101_rf_registers_set *rf_settings);
 int power_on_and_setup(struct device *dev);
-int cc1101_tx(struct device *dev, struct net_pkt *pkt, struct net_buf *frag);
+//int cc1101_tx(struct device *dev, struct net_pkt *pkt, struct net_buf *frag);
+int cc1101_tx(struct device *dev, u8_t *data, u8_t len);
 int cc1101_start(struct device *dev);
 int cc1101_stop(struct device *dev);
 int cc1101_set_txpower(struct device *dev, s16_t dbm);

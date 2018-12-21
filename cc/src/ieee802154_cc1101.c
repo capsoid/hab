@@ -7,10 +7,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#define SYS_LOG_LEVEL CONFIG_SYS_LOG_IEEE802154_DRIVER_LEVEL
-#define SYS_LOG_DOMAIN "dev/cc1101"
-#include <logging/sys_log.h>
-
 #define CONFIG_NET_BUF_USER_DATA_SIZE 512
 
 #include <errno.h>
@@ -33,13 +29,13 @@
 
 #define CFG_CC1101_DRV_NAME "CC1101"
 #define CFG_CC1101_SPI_DRV_NAME "SPI_1"
-#define CFG_CC1101_SPI_FREQ 6000
+#define CFG_CC1101_SPI_FREQ 6000000
 #define CFG_CC1101_GPIO_SPI_CS_DRV_NAME "GPIOA"
-#define CFG_CC1101_GPIO_SPI_CS_PIN 0
+#define CFG_CC1101_GPIO_SPI_CS_PIN 3
 #define CFG_CC1101_GPIO_GDO0_DRV_NAME "GPIOA"
-#define CFG_CC1101_GPIO_GDO0_PIN 0
+#define CFG_CC1101_GPIO_GDO0_PIN 2
 #define CFG_CC1101_GPIO_GDO1_DRV_NAME "GPIOA"
-#define CFG_CC1101_GPIO_GDO1_PIN 0
+#define CFG_CC1101_GPIO_GDO1_PIN 1
 #define CFG_CC1101_RX_STACK_SIZE 1024
 
 static struct spi_cs_control            cs_ctrl;
@@ -53,76 +49,76 @@ static void _cc1101_print_status(u8_t status)
 {
     switch (status) {
         case CC1101_STATUS_SLEEP:
-            SYS_LOG_DBG("Sleep");
+            printk("Sleep\n");
             break;
         case CC1101_STATUS_IDLE:
-            SYS_LOG_DBG("Idling");
+            printk("Idling\n");
             break;
         case CC1101_STATUS_XOFF:
-            SYS_LOG_DBG("XOFF");
+            printk("XOFF\n");
             break;
         case CC1101_STATUS_VCOON_MC:
-            SYS_LOG_DBG("VCOON_MC");
+            printk("VCOON_MC\n");
             break;
         case CC1101_STATUS_REGON_MC:
-            SYS_LOG_DBG("REGON_MC");
+            printk("REGON_MC\n");
             break;
         case CC1101_STATUS_MANCAL:
-            SYS_LOG_DBG("MANCAL");
+            printk("MANCAL\n");
             break;
         case CC1101_STATUS_VCOON:
-            SYS_LOG_DBG("VCOON");
+            printk("VCOON\n");
             break;
         case CC1101_STATUS_REGON:
-            SYS_LOG_DBG("REGON");
+            printk("REGON\n");
             break;
         case CC1101_STATUS_STARTCAL:
-            SYS_LOG_DBG("STARTCAL");
+            printk("STARTCAL\n");
             break;
         case CC1101_STATUS_BWBOOST:
-            SYS_LOG_DBG("BWBOOST");
+            printk("BWBOOST\n");
             break;
         case CC1101_STATUS_FS_LOCK:
-            SYS_LOG_DBG("FS LOCK");
+            printk("FS LOCK\n");
             break;
         case CC1101_STATUS_IFADCON:
-            SYS_LOG_DBG("IFADCON");
+            printk("IFADCON\n");
             break;
         case CC1101_STATUS_ENDCAL:
-            SYS_LOG_DBG("ENDCAL");
+            printk("ENDCAL\n");
             break;
         case CC1101_STATUS_RX:
-            SYS_LOG_DBG("RX");
+            printk("RX\n");
             break;
         case CC1101_STATUS_RX_END:
-            SYS_LOG_DBG("RX END");
+            printk("RX END\n");
             break;
         case CC1101_STATUS_RX_RST:
-            SYS_LOG_DBG("RX RST");
+            printk("RX RST\n");
             break;
         case CC1101_STATUS_TXRX_SWITCH:
-            SYS_LOG_DBG("TXRX SW");
+            printk("TXRX SW\n");
             break;
         case CC1101_STATUS_RXFIFO_OVERFLOW:
-            SYS_LOG_DBG("RX FIFO OF");
+            printk("RX FIFO OF\n");
             break;
         case CC1101_STATUS_FSTXON:
-            SYS_LOG_DBG("FSTXON");
+            printk("FSTXON\n");
             break;
         case CC1101_STATUS_TX:
-            SYS_LOG_DBG("TX");
+            printk("TX\n");
             break;
         case CC1101_STATUS_TX_END:
-            SYS_LOG_DBG("TX END");
+            printk("TX END\n");
             break;
         case CC1101_STATUS_RXTX_SWITCH:
-            SYS_LOG_DBG("RXTX SW");
+            printk("RXTX SW\n");
             break;
         case CC1101_STATUS_TXFIFO_UNDERFLOW:
-            SYS_LOG_DBG("TX UF");
+            printk("TX UF\n");
             break;
         default:
-            SYS_LOG_DBG("UNKNOWN %d", status);
+            printk("UNKNOWN %d\n", status);
             break;
     }
 }
@@ -149,7 +145,7 @@ bool _cc1101_access_reg(struct cc1101_context *ctx, bool read, u8_t addr,
     struct spi_buf_set tx = { .buffers = buf };
 
     /*
-       SYS_LOG_DBG("%s: addr 0x%02x - Data %p Length %u - %s, %s",
+       printk("%s: addr 0x%02x - Data %p Length %u - %s, %s",
        read ? "Read" : "Write", addr, data, length,
        extended ? "extended" : "normal",
        burst ? "burst" : "single");
@@ -203,13 +199,34 @@ struct cc1101_gpio_configuration *cc1101_configure_gpios(void)
 {
     struct device *gdo0_dev = device_get_binding(CFG_CC1101_GPIO_GDO0_DRV_NAME);
     if (!gdo0_dev) {
-        SYS_LOG_ERR("Unable to get GDO0 GPIO device");
+        printk("Unable to get GDO0 GPIO device\n");
         return NULL;
     }
 
     struct device *gdo1_dev = device_get_binding(CFG_CC1101_GPIO_GDO1_DRV_NAME);
     if (!gdo1_dev) {
-        SYS_LOG_ERR("Unable to get GDO1 GPIO device");
+        printk("Unable to get GDO1 GPIO device\n");
+        return NULL;
+    }
+
+    struct device *cs_dev = device_get_binding(CFG_CC1101_GPIO_SPI_CS_DRV_NAME);
+    if (!cs_dev) {
+        printk("Unable to get CS GPIO device\n");
+        return NULL;
+    }
+
+    if (gpio_pin_configure(gdo0_dev, CFG_CC1101_GPIO_GDO0_PIN, GPIO_DIR_OUT)) {
+        printk("Unable to configure GDO0 pin\n");
+        return NULL;
+    }
+
+    if (gpio_pin_configure(gdo1_dev, CFG_CC1101_GPIO_GDO1_PIN, GPIO_DIR_OUT)) {
+        printk("Unable to configure GDO1 pin\n");
+        return NULL;
+    }
+
+    if (gpio_pin_configure(cs_dev, CFG_CC1101_GPIO_SPI_CS_PIN, GPIO_DIR_OUT)) {
+        printk("Unable to configure CS pin\n");
         return NULL;
     }
 
@@ -285,7 +302,7 @@ bool rf_install_settings(struct device *dev,
     if (!_cc1101_access_reg(cc1101, false, CC1101_REG_FIFOTHR,
                 (void *)rf_settings->registers,
                 CC1101_RF_REGS, true)) {
-        SYS_LOG_ERR("Could not install RF settings");
+        printk("Could not install RF settings\n");
         return false;
     }
 
@@ -296,10 +313,10 @@ bool rf_install_settings(struct device *dev,
 
 static int rf_calibrate(struct cc1101_context *ctx)
 {
-    SYS_LOG_INF("CC1101 calibrate");
+    printk("CC1101 calibrate\n");
 
     if (!instruct_scal(ctx)) {
-        SYS_LOG_ERR("Could not calibrate RF");
+        printk("Could not calibrate RF\n");
         return -EIO;
     }
 
@@ -309,7 +326,7 @@ static int rf_calibrate(struct cc1101_context *ctx)
     if (!instruct_sidle(ctx) ||
             !instruct_sfrx(ctx) ||
             !instruct_srx(ctx)) {
-        SYS_LOG_ERR("Could not switch to RX");
+        printk("Could not switch to RX\n");
         return -EIO;
     }
 
@@ -366,7 +383,7 @@ static inline u8_t get_rx_bytes(struct cc1101_context *ctx)
     }
 
     if (rx_bytes & 0x80) {
-        SYS_LOG_DBG("overflow\n");
+        printk("overflow\n");
     }
 
     return rx_bytes & 0x7F;
@@ -441,34 +458,34 @@ static void cc1101_rx(struct device *dev)
         pkt_len = get_packet_length(cc1101);
 
 
-        SYS_LOG_DBG("red len: %d datalen %d\n", get_rx_bytes(cc1101), pkt_len);
+        printk("red len: %d datalen %d\n", get_rx_bytes(cc1101), pkt_len);
 
         pkt_len = get_rx_bytes(cc1101);
 
         if (status == CC1101_STATUS_STARTCAL) {
-            SYS_LOG_ERR("start CAL error");
+            printk("start CAL error\n");
             goto flush;
         }
 
         if (status == CC1101_STATUS_RXFIFO_OVERFLOW) {
-            SYS_LOG_ERR("RX FIFO OF error");
+            printk("RX FIFO OF error\n");
             goto flush;
         }
 
         if (status == CC1101_STATUS_TXFIFO_UNDERFLOW) {
-            SYS_LOG_ERR("TX FIFO UF error");
+            printk("TX FIFO UF error\n");
             goto flush;
         }
 /*
         pkt = net_pkt_get_reserve_rx(K_NO_WAIT);
         if (!pkt) {
-            SYS_LOG_ERR("No free pkt available");
+            printk("No free pkt available\n");
             goto flush;
         }
 
         pkt_frag = net_pkt_get_frag(pkt, K_NO_WAIT);
         if (!pkt_frag) {
-            SYS_LOG_ERR("No free frag available");
+            printk("No free frag available\n");
             goto flush;
         }
 
@@ -476,30 +493,30 @@ static void cc1101_rx(struct device *dev)
         */
 
         if (!verify_rxfifo_validity(cc1101, pkt_len)) {
-            SYS_LOG_ERR("Invalid frame");
+            printk("Invalid frame\n");
             goto flush;
         }
 
         if (!read_rxfifo_content(cc1101, pkt_frag, pkt_len)) {
-            SYS_LOG_ERR("No content read");
+            printk("No content read\n");
             goto flush;
         }
 
         if (!verify_crc(cc1101, pkt, pkt_len)) {
-            SYS_LOG_ERR("Bad packet CRC");
+            printk("Bad packet CRC\n");
             goto flush;
         }
         /*
            if (ieee802154_radio_handle_ack(cc1101->iface, pkt) == NET_OK) {
-           SYS_LOG_DBG("ACK packet handled");
+           printk("ACK packet handled\n");
            goto flush;
            }
            */
 
-        SYS_LOG_DBG("Caught a packet (%u)", pkt_len);
+        printk("Caught a packet (%u)\n", pkt_len);
 /*
         if (net_recv_data(cc1101->iface, pkt) < 0) {
-            SYS_LOG_DBG("Packet dropped by NET stack");
+            printk("Packet dropped by NET stack\n");
             goto flush;
         }
         net_analyze_stack("CC1101 Rx Fiber stack",
@@ -508,7 +525,7 @@ static void cc1101_rx(struct device *dev)
         */
         continue;
 flush:
-        SYS_LOG_DBG("Flushing RX");
+        printk("Flushing RX\n");
         instruct_sidle(cc1101);
         instruct_sfrx(cc1101);
         instruct_srx(cc1101);
@@ -537,7 +554,7 @@ int cc1101_cca(struct device *dev)
         }
     }
 
-    SYS_LOG_WRN("Busy");
+    printk("Busy\n");
 
     return -EBUSY;
 }
@@ -549,11 +566,11 @@ int cc1101_set_channel(struct device *dev, u16_t channel)
     if (atomic_get(&cc1101->rx) == 0) {
         if (!write_reg_channel(cc1101, channel) ||
                 rf_calibrate(cc1101)) {
-            SYS_LOG_ERR("Could not set channel %u", channel);
+            printk("Could not set channel %u\n", channel);
             return -EIO;
         }
     } else {
-        SYS_LOG_WRN("Busy");
+        printk("Busy\n");
     }
 
     return 0;
@@ -564,7 +581,7 @@ int cc1101_set_txpower(struct device *dev, s16_t dbm)
     struct cc1101_context *cc1101 = dev->driver_data;
     u8_t pa_value;
 
-    SYS_LOG_DBG("%d dbm", dbm);
+    printk("%d dbm\n", dbm);
 
     switch (dbm) {
         case -30:
@@ -598,14 +615,14 @@ int cc1101_set_txpower(struct device *dev, s16_t dbm)
             pa_value = CC1101_PA_11;
             break;
         default:
-            SYS_LOG_ERR("Unhandled value");
+            printk("Unhandled value\n");
             return -EINVAL;
     }
 
     if (atomic_get(&cc1101->rx) == 0) {
         if (!_cc1101_access_reg(cc1101, false, CC1101_REG_PATABLE,
                     &pa_value, 1, true)) {
-            SYS_LOG_ERR("Could not set PA");
+            printk("Could not set PA\n");
             return -EIO;
         }
     }
@@ -613,33 +630,32 @@ int cc1101_set_txpower(struct device *dev, s16_t dbm)
     return 0;
 }
 
-int cc1101_tx(struct device *dev, struct net_pkt *pkt, struct net_buf *frag)
+//int cc1101_tx(struct device *dev, struct net_pkt *pkt, struct net_buf *frag)
+int cc1101_tx(struct device *dev, u8_t *data, u8_t len)
 {
     struct cc1101_context *cc1101 = dev->driver_data;
+    /*
     //	u8_t *frame = frag->data - net_pkt_ll_reserve(pkt);
     //	u8_t len = net_pkt_ll_reserve(pkt) + frag->len;
     u8_t *frame = frag->data;
     u8_t len = frag->len;
+    */
     bool status = false;
 
-    SYS_LOG_DBG("%p (%u)", frag, len);
+    printk("%p (%u)\n", data, len);
 
-    /* ToDo:
-     * Supporting 802.15.4g will require to loop in pkt's frags
-     * depending on len value, this will also take more time.
-     */
 
     if (!instruct_sidle(cc1101) ||
             !instruct_sfrx(cc1101) ||
             !instruct_sftx(cc1101) ||
             !instruct_sfstxon(cc1101)) {
-        SYS_LOG_ERR("Cannot switch to TX mode");
+        printk("Cannot switch to TX mode\n");
         goto out;
     }
 
     if (!write_txfifo(cc1101, &len, CC1101_PHY_HDR_LEN) ||
-            !write_txfifo(cc1101, frame, len)) {
-        SYS_LOG_ERR("Cannot fill-in TX fifo");
+            !write_txfifo(cc1101, data, len)) {
+        printk("Cannot fill-in TX fifo\n");
         goto out;
     }
 
@@ -647,7 +663,7 @@ int cc1101_tx(struct device *dev, struct net_pkt *pkt, struct net_buf *frag)
     atomic_set(&cc1101->tx_start, 0);
 
     if (!instruct_stx(cc1101)) {
-        SYS_LOG_ERR("Cannot start transmission");
+        printk("Cannot start transmission\n");
         goto out;
     }
 
@@ -663,7 +679,7 @@ out:
 
     if (atomic_get(&cc1101->tx) == 1 &&
             get_rx_bytes(cc1101) != 0) {
-        SYS_LOG_ERR("TX Failed");
+        printk("TX Failed\n");
 
         atomic_set(&cc1101->tx_start, 0);
         instruct_sftx(cc1101);
@@ -688,7 +704,7 @@ int cc1101_start(struct device *dev)
             !instruct_sftx(cc1101) ||
             !instruct_sfrx(cc1101) ||
             rf_calibrate(cc1101)) {
-        SYS_LOG_ERR("Could not proceed");
+        printk("Could not proceed\n");
         return -EIO;
     }
 
@@ -708,7 +724,7 @@ int cc1101_stop(struct device *dev)
     enable_gpio_interrupt(cc1101, CC1101_GPIO_IDX_GPIO1, false);
 
     if (!instruct_spwd(cc1101)) {
-        SYS_LOG_ERR("Could not proceed");
+        printk("Could not proceed\n");
         return -EIO;
     }
 
@@ -732,19 +748,19 @@ int power_on_and_setup(struct device *dev)
     struct cc1101_context *cc1101 = dev->driver_data;
 
     if (!instruct_sres(cc1101)) {
-        SYS_LOG_ERR("Cannot reset");
+        printk("Cannot reset\n");
         return -EIO;
     }
 
     if (!rf_install_settings(dev, &cc1101_rf_settings)) {
-        SYS_LOG_ERR("Cannot write settings");
+        printk("Cannot write settings\n");
         return -EIO;
     }
 
     if (!write_reg_iocfg2(cc1101, CC1101_SETTING_IOCFG2) ||
             !write_reg_iocfg1(cc1101, CC1101_SETTING_IOCFG1) ||
             !write_reg_iocfg0(cc1101, CC1101_SETTING_IOCFG0)) {
-        SYS_LOG_ERR("Cannot configure GPIOs");
+        printk("Cannot configure GPIOs\n");
         return -EIO;
     }
 
@@ -760,27 +776,25 @@ static int configure_spi(struct device *dev)
     cc1101->spi = device_get_binding(
             CFG_CC1101_SPI_DRV_NAME);
     if (!cc1101->spi) {
-        SYS_LOG_ERR("Unable to get SPI device");
+        printk("Unable to get SPI device\n");
         return -ENODEV;
     }
 
-    if (IS_ENABLED(CFG_CC1101_GPIO_SPI_CS)) {
-        cs_ctrl.gpio_dev = device_get_binding(
-                CFG_CC1101_GPIO_SPI_CS_DRV_NAME);
-        if (!cs_ctrl.gpio_dev) {
-            SYS_LOG_ERR("Unable to get GPIO SPI CS device");
-            return -ENODEV;
-        }
-
-        cs_ctrl.gpio_pin = CFG_CC1101_GPIO_SPI_CS_PIN;
-        cs_ctrl.delay = 0;
-
-        cc1101->spi_cfg.cs = &cs_ctrl;
-
-        SYS_LOG_DBG("SPI GPIO CS configured on %s:%u",
-                CFG_CC1101_GPIO_SPI_CS_DRV_NAME,
-                CFG_CC1101_GPIO_SPI_CS_PIN);
+    cs_ctrl.gpio_dev = device_get_binding(
+            CFG_CC1101_GPIO_SPI_CS_DRV_NAME);
+    if (!cs_ctrl.gpio_dev) {
+        printk("Unable to get GPIO SPI CS device\n");
+        return -ENODEV;
     }
+
+    cs_ctrl.gpio_pin = CFG_CC1101_GPIO_SPI_CS_PIN;
+    cs_ctrl.delay = 100;
+
+    cc1101->spi_cfg.cs = &cs_ctrl;
+
+    printk("SPI GPIO CS configured on %s:%u\n",
+            CFG_CC1101_GPIO_SPI_CS_DRV_NAME,
+            CFG_CC1101_GPIO_SPI_CS_PIN);
 
     cc1101->spi_cfg.operation = SPI_WORD_SET(8);
     cc1101->spi_cfg.frequency = CFG_CC1101_SPI_FREQ;
@@ -800,30 +814,29 @@ static int cc1101_init(struct device *dev)
 
     cc1101->gpios = cc1101_configure_gpios();
     if (!cc1101->gpios) {
-        SYS_LOG_ERR("Configuring GPIOS failed");
+        printk("Configuring GPIOS failed\n");
         return -EIO;
     }
 
     if (configure_spi(dev) != 0) {
-        SYS_LOG_ERR("Configuring SPI failed");
+        printk("Configuring SPI failed\n");
         return -EIO;
     }
 
-    SYS_LOG_DBG("GPIO and SPI configured");
+    printk("GPIO and SPI configured\n");
 
     if (power_on_and_setup(dev) != 0) {
-        SYS_LOG_ERR("Configuring CC1101 failed");
+        printk("Configuring CC1101 failed\n");
         return -EIO;
     }
-
     k_thread_create(&cc1101->rx_thread, cc1101->rx_stack,
             CFG_CC1101_RX_STACK_SIZE,
             (k_thread_entry_t)cc1101_rx,
             dev, NULL, NULL, K_PRIO_COOP(2), 0, 0);
 
-    SYS_LOG_INF("CC1101 initialized");
+    printk("CC1101 initialized\n");
 
     return 0;
 }
 
-DEVICE_INIT(cc1101, CFG_CC1101_DRV_NAME, cc1101_init, &cc1101_context, NULL, APPLICATION, 0);
+DEVICE_AND_API_INIT(cc1101, CFG_CC1101_DRV_NAME, cc1101_init, &cc1101_context, (void *)42, APPLICATION, 0, (void *)43);

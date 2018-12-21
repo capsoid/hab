@@ -17,6 +17,7 @@
 #include <stdlib.h>
 
 #include "cc1101.h"
+#include "ieee802154_cc1101.h"
 
 #define PR(fmt, ...)						\
     shell_fprintf(shell, SHELL_NORMAL, fmt, ##__VA_ARGS__)
@@ -48,7 +49,7 @@ void main(void)
     }
 
     cc1101 = device_get_binding("CC1101");
-    if (!mpu6050)
+    if (!cc1101)
     {
         printk("Failed to init CC1101!\n");
     }
@@ -157,25 +158,30 @@ static int cmd_cc1101_init(const struct shell *shell, size_t argc, char **argv)
 
 static int cmd_cc1101_rr(const struct shell *shell, size_t argc, char **argv)
 {
-    ARG_UNUSED(argc);
+    __ASSERT(argc == 2, "wrong format");
+/*
+    u8_t v;
+    u8_t reg = atoi(argv[1]);
+    cc1101_read_reg(reg, &v);
+    PR("reg %02x = %u\n", reg, v);
+    */
+
+    return 0;
+}
+
+static int cmd_cc1101_tx(const struct shell *shell, size_t argc, char **argv)
+{
     ARG_UNUSED(argv);
 
-    __ASSERT(argc == 2, "wrong format");
-
-    //u8_t v;
-    //u8_t reg = atoi(argv[1]);
- //   cc1101_read_reg(reg, &v);
-    //PR("reg %02x = %u\n", reg, v);
+    __ASSERT_NO_MSG(cc1101);
+    cc1101_tx(cc1101, argv[1], strlen(argv[1]));
 
     return 0;
 }
 
 static int cmd_cc1101_wr(const struct shell *shell, size_t argc, char **argv)
 {
-    ARG_UNUSED(argc);
-    ARG_UNUSED(argv);
-
-//    cc1101_write_reg(0, 0);
+    __ASSERT(argc == 2, "wrong format");
 
     return 0;
 }
@@ -199,6 +205,7 @@ SHELL_CREATE_STATIC_SUBCMD_SET(cc1101_commands)
     SHELL_CMD(init, NULL, "init RF", cmd_cc1101_init),
     SHELL_CMD(rr, NULL, "'cc1101 rr <reg>' reads cc1101 <reg> value", cmd_cc1101_rr),
     SHELL_CMD(wr, NULL, "'cc1101 wr <reg> <val>' writes cc1101 <reg> with <val>", cmd_cc1101_wr),
+    SHELL_CMD(tx, NULL, "'cc1101 tx <string>' tx <string>", cmd_cc1101_tx),
     SHELL_SUBCMD_SET_END
 };
 

@@ -6,7 +6,7 @@ set(CONF_FILE prj.conf)
 include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
 project(capsoid_controller)
 
-target_sources(app PRIVATE src/main.c src/ieee802154_cc1101.c)
+target_sources(app PRIVATE src/main.c src/ieee802154_cc1101.c src/cc1101.c)
 
 include_directories(src)
 
