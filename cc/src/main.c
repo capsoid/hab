@@ -6,6 +6,7 @@
 
 #include <zephyr.h>
 
+#include <kernel.h>
 #include <device.h>
 #include <misc/__assert.h>
 #include <misc/printk.h>
@@ -34,6 +35,8 @@ struct device *cc1101;
 
 void main(void)
 {
+    int ret;
+
     printk("[%s  %s] Hello World from %s!\n", __DATE__, __TIME__, CONFIG_BOARD);
 
     bme280 = device_get_binding("BME280");
@@ -52,6 +55,11 @@ void main(void)
     if (!cc1101)
     {
         printk("Failed to init CC1101!\n");
+    }
+    else
+    {
+        ret = cc1101_start(cc1101);
+        __ASSERT_NO_MSG(!ret);
     }
 
     //__ASSERT(0, "fail\n");
@@ -186,6 +194,41 @@ static int cmd_cc1101_wr(const struct shell *shell, size_t argc, char **argv)
     return 0;
 }
 
+static void rf_beacon(struct device *dev)
+{
+    int i = 0;
+    char tmp[10] = {0};
+
+    while (1) {
+        snprintf(tmp, sizeof(tmp), "%d", i++);
+        printk("tx: '%s'\n", tmp);
+        cc1101_tx(dev, tmp, strlen(tmp));
+        k_sleep(1000);
+    }
+}
+
+static int cmd_cc1101_beacon(const struct shell *shell, size_t argc, char **argv)
+{
+    if (argc != 2)
+    {
+        printk("wrong format\n");
+        return 0;
+    }
+
+    static struct beacon_ctx {
+        K_THREAD_STACK_MEMBER(beacon_stack, CFG_CC1101_RX_STACK_SIZE);
+        struct k_thread beacon_thread;
+    } b;
+
+    k_thread_create(&b.beacon_thread, b.beacon_stack,
+            1024,
+            (k_thread_entry_t)rf_beacon,
+            cc1101, NULL, NULL, K_PRIO_COOP(2), 0, 0);
+    k_thread_name_set(&b.beacon_thread, "rf_beacon");
+
+    return 0;
+}
+
 SHELL_CREATE_STATIC_SUBCMD_SET(mpu6050_commands)
 {
     SHELL_CMD(read, NULL, "read mpu6050", cmd_mpu6050_read),
@@ -206,6 +249,7 @@ SHELL_CREATE_STATIC_SUBCMD_SET(cc1101_commands)
     SHELL_CMD(rr, NULL, "'cc1101 rr <reg>' reads cc1101 <reg> value", cmd_cc1101_rr),
     SHELL_CMD(wr, NULL, "'cc1101 wr <reg> <val>' writes cc1101 <reg> with <val>", cmd_cc1101_wr),
     SHELL_CMD(tx, NULL, "'cc1101 tx <string>' tx <string>", cmd_cc1101_tx),
+    SHELL_CMD(beacon, NULL, "'cc1101 beacon <start|stop>' start/stop RF beacon>", cmd_cc1101_beacon),
     SHELL_SUBCMD_SET_END
 };
 

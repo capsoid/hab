@@ -21,10 +21,10 @@
  ***************************
  */
 
-#define CONFIG_IEEE802154_CC1101_RX_STACK_SIZE 512
+#define CFG_CC1101_RX_STACK_SIZE 1024
 
 struct cc1101_context {
-	struct net_if *iface;
+	//struct net_if *iface;
 	/**************************/
 	struct cc1101_gpio_configuration *gpios;
 	struct gpio_callback rx_tx_cb;
@@ -38,8 +38,7 @@ struct cc1101_context {
 	atomic_t tx;
 	atomic_t tx_start;
 	/************RX************/
-	K_THREAD_STACK_MEMBER(rx_stack,
-			      CONFIG_IEEE802154_CC1101_RX_STACK_SIZE);
+	K_THREAD_STACK_MEMBER(rx_stack, CFG_CC1101_RX_STACK_SIZE);
 	struct k_thread rx_thread;
 	struct k_sem rx_lock;
 	atomic_t rx;
@@ -80,7 +79,6 @@ static inline bool _cc1101_instruct(struct cc1101_context *ctx, u8_t addr)
 #define DEFINE_REG_READ(__reg_name, __reg_addr)				     \
 	static inline u8_t read_reg_##__reg_name(struct cc1101_context *ctx) \
 	{								     \
-		/*SYS_LOG_DBG("");*/					     \
 		return _cc1101_read_single_reg(ctx, __reg_addr);	     \
 	}
 
@@ -88,7 +86,6 @@ static inline bool _cc1101_instruct(struct cc1101_context *ctx, u8_t addr)
 	static inline bool write_reg_##__reg_name(struct cc1101_context *ctx, \
 						  u8_t val)		      \
 	{								      \
-		/*SYS_LOG_DBG("");*/					      \
 		return _cc1101_write_single_reg(ctx, __reg_addr,	      \
 						val);			      \
 	}
@@ -96,7 +93,6 @@ static inline bool _cc1101_instruct(struct cc1101_context *ctx, u8_t addr)
 #define DEFINE_STROBE_INSTRUCTION(__ins_name, __ins_addr)		     \
 	static inline bool instruct_##__ins_name(struct cc1101_context *ctx) \
 	{								     \
-		/*SYS_LOG_DBG("");*/					     \
 		return _cc1101_instruct(ctx, __ins_addr);		     \
 	}
 

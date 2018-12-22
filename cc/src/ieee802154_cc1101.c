@@ -36,7 +36,6 @@
 #define CFG_CC1101_GPIO_GDO0_PIN 2
 #define CFG_CC1101_GPIO_GDO1_DRV_NAME "GPIOA"
 #define CFG_CC1101_GPIO_GDO1_PIN 1
-#define CFG_CC1101_RX_STACK_SIZE 1024
 
 static struct spi_cs_control            cs_ctrl;
 static struct cc1101_gpio_configuration gpios[CC1101_GPIO_IDX_MAX];
@@ -457,7 +456,6 @@ static void cc1101_rx(struct device *dev)
         _cc1101_print_status(status);
         pkt_len = get_packet_length(cc1101);
 
-
         printk("red len: %d datalen %d\n", get_rx_bytes(cc1101), pkt_len);
 
         pkt_len = get_rx_bytes(cc1101);
@@ -642,8 +640,7 @@ int cc1101_tx(struct device *dev, u8_t *data, u8_t len)
     */
     bool status = false;
 
-    printk("%p (%u)\n", data, len);
-
+    //printk("%p (%u)\n", data, len);
 
     if (!instruct_sidle(cc1101) ||
             !instruct_sfrx(cc1101) ||
@@ -833,6 +830,7 @@ static int cc1101_init(struct device *dev)
             CFG_CC1101_RX_STACK_SIZE,
             (k_thread_entry_t)cc1101_rx,
             dev, NULL, NULL, K_PRIO_COOP(2), 0, 0);
+    k_thread_name_set(&cc1101->rx_thread, "cc1101_rx");
 
     printk("CC1101 initialized\n");
 
