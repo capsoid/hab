@@ -532,10 +532,8 @@ flush:
             net_pkt_unref(pkt);
         }
         */
-
     }
 }
-
 
 /********************
  * Radio device API *
@@ -579,7 +577,7 @@ int cc1101_set_txpower(struct device *dev, s16_t dbm)
     struct cc1101_context *cc1101 = dev->driver_data;
     u8_t pa_value;
 
-    printk("%d dbm\n", dbm);
+    printk("set rf power to %d dbm\n", dbm);
 
     switch (dbm) {
         case -30:
@@ -594,9 +592,6 @@ int cc1101_set_txpower(struct device *dev, s16_t dbm)
         case -10:
             pa_value = CC1101_PA_MINUS_10;
             break;
-        case -6:
-            pa_value = CC1101_PA_MINUS_6;
-            break;
         case 0:
             pa_value = CC1101_PA_0;
             break;
@@ -608,9 +603,6 @@ int cc1101_set_txpower(struct device *dev, s16_t dbm)
             break;
         case 10:
             pa_value = CC1101_PA_10;
-            break;
-        case 11:
-            pa_value = CC1101_PA_11;
             break;
         default:
             printk("Unhandled value\n");
@@ -665,10 +657,15 @@ int cc1101_tx(struct device *dev, u8_t *data, u8_t len)
     }
 
     /* Wait for SYNC to be sent */
-    k_sem_take(&cc1101->tx_sync, 100);
+    if (k_sem_take(&cc1101->tx_sync, 100) != 0) {
+        printk("Faild to take tx_sync sem\n");
+    }
     if (atomic_get(&cc1101->tx_start) == 1) {
         /* Now wait for the packet to be fully sent */
         k_sem_take(&cc1101->tx_sync, 100);
+        if (k_sem_take(&cc1101->tx_sync, 100) != 0) {
+            printk("Faild to take tx_sync sem\n");
+        }
     }
 
 out:
@@ -785,7 +782,7 @@ static int configure_spi(struct device *dev)
     }
 
     cs_ctrl.gpio_pin = CFG_CC1101_GPIO_SPI_CS_PIN;
-    cs_ctrl.delay = 100;
+    cs_ctrl.delay = 10;
 
     cc1101->spi_cfg.cs = &cs_ctrl;
 

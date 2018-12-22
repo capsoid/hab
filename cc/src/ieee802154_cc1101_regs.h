@@ -161,31 +161,14 @@
 /* SW define */
 #define CC1101_STATUS_CHIP_NOT_READY    (0x17)
 
-/* PA Table (0x3E) Register Content */
-/* PA table content is lost after entering sleep */
-#ifdef CC1101_MULTILAYER_INDUCTOR_ANTENNA
 #define CC1101_PA_MINUS_30              (0x12)
-#define CC1101_PA_MINUS_20              (0x0D)
-#define CC1101_PA_MINUS_15              (0x1C)
-#define CC1101_PA_MINUS_10              (0x34)
-#define CC1101_PA_MINUS_6               (0x40)
-#define CC1101_PA_0                     (0x51)
-#define CC1101_PA_5                     (0x85)
-#define CC1101_PA_7                     (0xCB)
-#define CC1101_PA_10                    (0xC2)
-#define CC1101_PA_11                    (0xC0)
-#else
-#define CC1101_PA_MINUS_30              (0x30)
-#define CC1101_PA_MINUS_20              (0x17)
+#define CC1101_PA_MINUS_20              (0x0E)
 #define CC1101_PA_MINUS_15              (0x1D)
-#define CC1101_PA_MINUS_10              (0x26)
-#define CC1101_PA_MINUS_6               (0x37)
-#define CC1101_PA_0                     (0x50)
-#define CC1101_PA_5                     (0x86)
-#define CC1101_PA_7                     (0xCD)
-#define CC1101_PA_10                    (0xC5)
-#define CC1101_PA_11                    (0xC0)
-#endif /* CC1101_CHIP_ANTENNA */
+#define CC1101_PA_MINUS_10              (0x34)
+#define CC1101_PA_0                     (0x60)
+#define CC1101_PA_5                     (0x84)
+#define CC1101_PA_7                     (0xC8)
+#define CC1101_PA_10                    (0xC0)
 
 /* Appended FCS - See Section 8 */
 #define CC1101_FCS_LEN                          (2)

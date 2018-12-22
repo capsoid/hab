@@ -58,8 +58,9 @@ void main(void)
     }
     else
     {
-        ret = cc1101_start(cc1101);
-        __ASSERT_NO_MSG(!ret);
+        ret = cc1101_start(cc1101);           __ASSERT_NO_MSG(!ret);
+        ret = cc1101_set_txpower(cc1101, 10); __ASSERT_NO_MSG(!ret);
+        ret = cc1101_set_channel(cc1101, 0);  __ASSERT_NO_MSG(!ret);
     }
 
     //__ASSERT(0, "fail\n");
@@ -229,6 +230,32 @@ static int cmd_cc1101_beacon(const struct shell *shell, size_t argc, char **argv
     return 0;
 }
 
+static int cmd_cc1101_pa(const struct shell *shell, size_t argc, char **argv)
+{
+    if (argc != 2)
+    {
+        printk("wrong format\n");
+        return 0;
+    }
+
+    cc1101_set_txpower(cc1101, atoi(argv[1]));
+
+    return 0;
+}
+
+static int cmd_cc1101_channel(const struct shell *shell, size_t argc, char **argv)
+{
+    if (argc != 2)
+    {
+        printk("wrong format\n");
+        return 0;
+    }
+
+    cc1101_set_channel(cc1101, atoi(argv[1]));
+
+    return 0;
+}
+
 SHELL_CREATE_STATIC_SUBCMD_SET(mpu6050_commands)
 {
     SHELL_CMD(read, NULL, "read mpu6050", cmd_mpu6050_read),
@@ -250,6 +277,8 @@ SHELL_CREATE_STATIC_SUBCMD_SET(cc1101_commands)
     SHELL_CMD(wr, NULL, "'cc1101 wr <reg> <val>' writes cc1101 <reg> with <val>", cmd_cc1101_wr),
     SHELL_CMD(tx, NULL, "'cc1101 tx <string>' tx <string>", cmd_cc1101_tx),
     SHELL_CMD(beacon, NULL, "'cc1101 beacon <start|stop>' start/stop RF beacon>", cmd_cc1101_beacon),
+    SHELL_CMD(pa, NULL, "'cc1101 pa <-30|-20|-15|-10|0|5|7|10>' set RT output power (dBm)>", cmd_cc1101_pa),
+    SHELL_CMD(pa, NULL, "'cc1101 channel <num>' set RF channel>", cmd_cc1101_channel),
     SHELL_SUBCMD_SET_END
 };
 
