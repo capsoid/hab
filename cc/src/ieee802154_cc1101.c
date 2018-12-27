@@ -214,12 +214,12 @@ struct cc1101_gpio_configuration *cc1101_configure_gpios(void)
         return NULL;
     }
 
-    if (gpio_pin_configure(gdo0_dev, CFG_CC1101_GPIO_GDO0_PIN, GPIO_DIR_OUT)) {
+    if (gpio_pin_configure(gdo0_dev, CFG_CC1101_GPIO_GDO0_PIN, GPIO_DIR_IN)) {
         printk("Unable to configure GDO0 pin\n");
         return NULL;
     }
 
-    if (gpio_pin_configure(gdo1_dev, CFG_CC1101_GPIO_GDO1_PIN, GPIO_DIR_OUT)) {
+    if (gpio_pin_configure(gdo1_dev, CFG_CC1101_GPIO_GDO1_PIN, GPIO_DIR_IN)) {
         printk("Unable to configure GDO1 pin\n");
         return NULL;
     }
