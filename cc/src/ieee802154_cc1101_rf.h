@@ -111,7 +111,7 @@
 
 #define CC1101_SETTING_IOCFG2 0x04 //4 GDO2 Output Pin Configuration
 #define CC1101_SETTING_IOCFG1 0x2E //46 GDO1 Output Pin Configuration
-#define CC1101_SETTING_IOCFG0 0x01 //1 GDO0 Output Pin Configuration
+#define CC1101_SETTING_IOCFG0 0x06 //1 GDO0 Output Pin Configuration
 #define CC1101_SETTING_FIFOTHR 0x03 //67 RX FIFO and TX FIFO Thresholds
 #define CC1101_SETTING_SYNC1 0x90 //144 Sync Word, High Byte
 #define CC1101_SETTING_SYNC0 0x4E //78 Sync Word, Low Byte

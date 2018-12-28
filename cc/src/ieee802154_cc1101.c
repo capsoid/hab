@@ -214,12 +214,12 @@ struct cc1101_gpio_configuration *cc1101_configure_gpios(void)
         return NULL;
     }
 
-    if (gpio_pin_configure(gdo0_dev, CFG_CC1101_GPIO_GDO0_PIN, GPIO_DIR_IN)) {
+    if (gpio_pin_configure(gdo0_dev, CFG_CC1101_GPIO_GDO0_PIN, GPIO_DIR_IN | GPIO_INT | GPIO_PUD_PULL_DOWN | GPIO_INT_EDGE | GPIO_INT_ACTIVE_HIGH)) {
         printk("Unable to configure GDO0 pin\n");
         return NULL;
     }
 
-    if (gpio_pin_configure(gdo1_dev, CFG_CC1101_GPIO_GDO1_PIN, GPIO_DIR_IN)) {
+    if (gpio_pin_configure(gdo1_dev, CFG_CC1101_GPIO_GDO1_PIN, GPIO_DIR_IN | GPIO_INT | GPIO_PUD_PULL_DOWN | GPIO_INT_EDGE |GPIO_INT_ACTIVE_HIGH)) {
         printk("Unable to configure GDO1 pin\n");
         return NULL;
     }
@@ -243,6 +243,8 @@ static inline void gdo_int_handler(struct device *port,
 
     struct cc1101_context *cc1101 =
         CONTAINER_OF(cb, struct cc1101_context, rx_tx_cb);
+
+    printk("int\n");
 
     if (atomic_get(&cc1101->tx) == 1) {
         if (atomic_get(&cc1101->tx_start) == 0) {
@@ -283,11 +285,12 @@ static void setup_gpio_callback(struct device *dev)
             BIT(cc1101->gpios[CC1101_GPIO_IDX_GPIO0].pin));
     gpio_add_callback(cc1101->gpios[CC1101_GPIO_IDX_GPIO0].dev,
             &cc1101->rx_tx_cb);
-
+/*
     gpio_init_callback(&cc1101->rx_tx_cb, gdo_int_handler,
             BIT(cc1101->gpios[CC1101_GPIO_IDX_GPIO1].pin));
     gpio_add_callback(cc1101->gpios[CC1101_GPIO_IDX_GPIO1].dev,
             &cc1101->rx_tx_cb);
+    */
 }
 
 /****************
@@ -406,11 +409,9 @@ static inline bool verify_rxfifo_validity(struct cc1101_context *ctx,
     return true;
 }
 
-static inline bool read_rxfifo_content(struct cc1101_context *ctx,
-        struct net_buf *frag, u8_t len)
+static inline bool read_rxfifo_content(struct cc1101_context *ctx, u8_t *buf, u8_t len)
 {
-
-    if (!read_rxfifo(ctx, frag->data, len) ||
+    if (!read_rxfifo(ctx, buf, len) ||
             (get_status(ctx) == CC1101_STATUS_RXFIFO_OVERFLOW)) {
         return false;
     }
@@ -421,8 +422,12 @@ static inline bool read_rxfifo_content(struct cc1101_context *ctx,
 }
 
 static inline bool verify_crc(struct cc1101_context *ctx,
-        struct net_pkt *pkt, u8_t len)
+        u8_t *buf, u8_t len)
+
+//static inline bool verify_crc(struct cc1101_context *ctx,
+//        struct net_pkt *pkt, u8_t len)
 {
+    /*
     u8_t *fcs = pkt->frags->data + len - CC1101_FCS_LEN;
 
     if (!read_rxfifo(ctx, fcs, 2)) {
@@ -435,6 +440,7 @@ static inline bool verify_crc(struct cc1101_context *ctx,
 
     //	net_pkt_set_ieee802154_rssi(pkt, fcs[0]);
     //	net_pkt_set_ieee802154_lqi(pkt, fcs[1] & CC1101_FCS_LQI_MASK);
+    */
 
     return true;
 }
@@ -442,23 +448,22 @@ static inline bool verify_crc(struct cc1101_context *ctx,
 static void cc1101_rx(struct device *dev)
 {
     struct cc1101_context *cc1101 = dev->driver_data;
-    struct net_buf *pkt_frag;
-    struct net_pkt *pkt;
+    u8_t buf[0x80] = {0};
     u8_t pkt_len;
+    u8_t rx_len;
     u8_t status;
 
     while (1) {
-        pkt = NULL;
 
         k_sem_take(&cc1101->rx_lock, K_FOREVER);
 
         status = get_status(cc1101);
         _cc1101_print_status(status);
+
         pkt_len = get_packet_length(cc1101);
+        rx_len = get_rx_bytes(cc1101);
 
-        printk("red len: %d datalen %d\n", get_rx_bytes(cc1101), pkt_len);
-
-        pkt_len = get_rx_bytes(cc1101);
+        printk("red len: %d datalen %d\n", rx_len, pkt_len);
 
         if (status == CC1101_STATUS_STARTCAL) {
             printk("start CAL error\n");
@@ -474,33 +479,18 @@ static void cc1101_rx(struct device *dev)
             printk("TX FIFO UF error\n");
             goto flush;
         }
-/*
-        pkt = net_pkt_get_reserve_rx(K_NO_WAIT);
-        if (!pkt) {
-            printk("No free pkt available\n");
-            goto flush;
-        }
-
-        pkt_frag = net_pkt_get_frag(pkt, K_NO_WAIT);
-        if (!pkt_frag) {
-            printk("No free frag available\n");
-            goto flush;
-        }
-
-        net_pkt_frag_insert(pkt, pkt_frag);
-        */
 
         if (!verify_rxfifo_validity(cc1101, pkt_len)) {
             printk("Invalid frame\n");
             goto flush;
         }
 
-        if (!read_rxfifo_content(cc1101, pkt_frag, pkt_len)) {
+        if (!read_rxfifo_content(cc1101, buf, pkt_len)) {
             printk("No content read\n");
             goto flush;
         }
 
-        if (!verify_crc(cc1101, pkt, pkt_len)) {
+        if (!verify_crc(cc1101, buf, pkt_len)) {
             printk("Bad packet CRC\n");
             goto flush;
         }
