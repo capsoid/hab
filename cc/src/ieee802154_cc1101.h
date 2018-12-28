@@ -30,7 +30,7 @@ struct cc1101_context {
 	struct gpio_callback rx_tx_cb;
 	struct device *spi;
 	struct spi_config spi_cfg;
-	u8_t mac_addr[8];
+	//u8_t mac_addr[8];
 	/************RF************/
 	const struct cc1101_rf_registers_set *rf_settings;
 	/************TX************/
@@ -122,7 +122,6 @@ DEFINE_STROBE_INSTRUCTION(snop, CC1101_INS_SNOP)
 
 bool rf_install_settings(struct device *dev, const struct cc1101_rf_registers_set *rf_settings);
 int power_on_and_setup(struct device *dev);
-//int cc1101_tx(struct device *dev, struct net_pkt *pkt, struct net_buf *frag);
 int cc1101_tx(struct device *dev, u8_t *data, u8_t len);
 int cc1101_start(struct device *dev);
 int cc1101_stop(struct device *dev);

@@ -282,15 +282,14 @@ static void setup_gpio_callback(struct device *dev)
     struct cc1101_context *cc1101 = dev->driver_data;
 
     gpio_init_callback(&cc1101->rx_tx_cb, gdo_int_handler,
-            BIT(cc1101->gpios[CC1101_GPIO_IDX_GPIO0].pin));
+            BIT(cc1101->gpios[CC1101_GPIO_IDX_GPIO0].pin) | BIT(cc1101->gpios[CC1101_GPIO_IDX_GPIO1].pin));
     gpio_add_callback(cc1101->gpios[CC1101_GPIO_IDX_GPIO0].dev,
             &cc1101->rx_tx_cb);
-/*
-    gpio_init_callback(&cc1101->rx_tx_cb, gdo_int_handler,
-            BIT(cc1101->gpios[CC1101_GPIO_IDX_GPIO1].pin));
-    gpio_add_callback(cc1101->gpios[CC1101_GPIO_IDX_GPIO1].dev,
-            &cc1101->rx_tx_cb);
-    */
+
+//    gpio_init_callback(&cc1101->rx_tx_cb, gdo_int_handler,
+//            BIT(cc1101->gpios[CC1101_GPIO_IDX_GPIO1].pin));
+//    gpio_add_callback(cc1101->gpios[CC1101_GPIO_IDX_GPIO1].dev,
+//            &cc1101->rx_tx_cb);
 }
 
 /****************
@@ -463,7 +462,7 @@ static void cc1101_rx(struct device *dev)
         pkt_len = get_packet_length(cc1101);
         rx_len = get_rx_bytes(cc1101);
 
-        printk("red len: %d datalen %d\n", rx_len, pkt_len);
+        printk("read len: %d datalen %d\n", rx_len, pkt_len);
 
         if (status == CC1101_STATUS_STARTCAL) {
             printk("start CAL error\n");
@@ -494,6 +493,7 @@ static void cc1101_rx(struct device *dev)
             printk("Bad packet CRC\n");
             goto flush;
         }
+
         /*
            if (ieee802154_radio_handle_ack(cc1101->iface, pkt) == NET_OK) {
            printk("ACK packet handled\n");
@@ -502,6 +502,7 @@ static void cc1101_rx(struct device *dev)
            */
 
         printk("Caught a packet (%u)\n", pkt_len);
+        printk("got '%s'\n", buf);
 /*
         if (net_recv_data(cc1101->iface, pkt) < 0) {
             printk("Packet dropped by NET stack\n");

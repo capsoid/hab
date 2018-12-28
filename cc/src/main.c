@@ -183,7 +183,7 @@ static int cmd_cc1101_tx(const struct shell *shell, size_t argc, char **argv)
     ARG_UNUSED(argv);
 
     __ASSERT_NO_MSG(cc1101);
-    cc1101_tx(cc1101, argv[1], strlen(argv[1]));
+    cc1101_tx(cc1101, argv[1], strlen(argv[1]) + 1);
 
     return 0;
 }
