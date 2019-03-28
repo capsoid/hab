@@ -1,0 +1,16 @@
+* C:\Users\Yauheni_Karatsevich\Documents\kicad\stratospheric_balloon\stratospheric_balloon.cir
+
+* EESchema Netlist Version 1.1 (Spice format) creation date: 10/12/2018 13:54:21
+
+* To exclude a component from the Spice Netlist add [Spice_Netlist_Enabled] user FIELD set to: N
+* To reorder the component spice node sequence add [Spice_Node_Sequence] user FIELD and define sequence: 2,1,0
+
+* Sheet Name: /
+M1  +3V3 /CC_MOSI1 /CC_SCK1 /CC_MISO1 /CC_GDO2 GND /CC_GDO0 /CC_NSS1 CC1101_MODULE		
+M2  /MPU_INT ? ? ? /MPU_SDA1 /MPU_SCL1 GND +3V3 MPU6050_MODULE		
+M3  /BME_MISO2 /BME_NSS2 /BME_MOSI2 /BME_SCK2 GND +3V3 BME280_MODULE		
+M4  +3V3 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? /BME_NSS2 /BME_SCK2 /BME_MISO2 /BME_MOSI2 /LASER_EN /MPU_INT /CC_GDO0 /CC_GDO2 /CC_MISO1 /CC_NSS1 /CC_SCK1 /CC_MISO1 /CC_MOSI1 /MPU_SCL1 /MPU_SDA1 ? ? STM32_BLUE-PILL_MODULE		
+BT1  +3V3 GND 2xAA		
+LD1  +3V3 GND /LASER_EN LAZER_DIOD		
+
+.end
