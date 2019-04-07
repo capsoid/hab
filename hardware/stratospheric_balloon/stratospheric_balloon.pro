@@ -1,4 +1,4 @@
-update=28/03/2019 16:47:14
+update=Sun 07 Apr 2019 08:19:21 PM +03
 version=1
 last_client=kicad
 [pcbnew]
@@ -27,7 +27,7 @@ NetIExt=net
 version=1
 [eeschema]
 version=1
-LibDir=
+LibDir=/home/yauheni/Documents/hab/hardware/stratospheric_balloon
 [eeschema/libraries]
 LibName1=stratospheric_balloon-rescue
 LibName2=power
@@ -64,3 +64,13 @@ LibName32=contrib
 LibName33=valves
 LibName34=stratospheric_balloon_sch
 LibName35=stm32
+[schematic_editor]
+version=1
+PageLayoutDescrFile=
+PlotDirectoryName=
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=Pcbnew
+SpiceForceRefPrefix=0
+SpiceUseNetNumbers=0
+LabSize=60

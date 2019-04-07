@@ -917,7 +917,7 @@
   )
 
   (module stratospheric_ballon:SIMCom_SIM800C (layer F.Cu) (tedit 5C335041) (tstamp 5CAA1BF5)
-    (at 106.68 72.39)
+    (at 90.93 74.93)
     (descr "Quad-Band GSM/GPRS module, 17.6x15.7x2.3mm, http://simcom.ee/documents/SIM800C/SIM800C_Hardware_Design_V1.05.pdf")
     (tags "GSM Module SIM800C")
     (path /5C544788)
@@ -1908,7 +1908,7 @@
   )
 
   (module TO_SOT_Packages_SMD:SOT-223 (layer F.Cu) (tedit 58CE4E7E) (tstamp 5CAA1DAC)
-    (at 68.58 90.83 90)
+    (at 73.9 87.02 90)
     (descr "module CMS SOT223 4 pins")
     (tags "CMS SOT")
     (path /5CA68356)
@@ -2118,7 +2118,7 @@
   )
 
   (module stratospheric_ballon:SIM_1 (layer F.Cu) (tedit 0) (tstamp 5CAA3ED7)
-    (at 86.53 73.66)
+    (at 132.25 137.68)
     (path /5CA678FC)
     (attr smd)
     (fp_text reference J3 (at -4.46682 -11.0594) (layer F.SilkS)
