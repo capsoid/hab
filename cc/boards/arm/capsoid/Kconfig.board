@@ -1,0 +1,4 @@
+config BOARD_CAPSOID
+	bool "CAPSOID"
+	select HAS_DTS_GPIO
+	depends on SOC_STM32F103X8

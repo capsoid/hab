@@ -1,0 +1,3 @@
+[submodule "cc/zephyr"]
+	path = cc/zephyr
+	url = git@github.com:zephyrproject-rtos/zephyr.git

@@ -1,6 +1,9 @@
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.16.1)
 
-set(BOARD stm32_min_dev)
+set(BOARD capsoid)
+
+set(BOARD_ROOT ${CMAKE_CURRENT_LIST_DIR})
+
 set(CONF_FILE prj.conf)
 
 include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
