@@ -2,3 +2,5 @@ sdk
 build
 tags
 .venv
+.ccls-cache
+.compile_commands.json
