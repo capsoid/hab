@@ -1,6 +1,8 @@
 sdk
 build
 tags
+.west
+*.run
 .venv
 .ccls-cache
 .compile_commands.json
