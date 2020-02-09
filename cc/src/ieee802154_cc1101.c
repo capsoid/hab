@@ -31,11 +31,11 @@
 #define CFG_CC1101_SPI_DRV_NAME "SPI_1"
 #define CFG_CC1101_SPI_FREQ 6000000
 #define CFG_CC1101_GPIO_SPI_CS_DRV_NAME "GPIOA"
-#define CFG_CC1101_GPIO_SPI_CS_PIN 3
+#define CFG_CC1101_GPIO_SPI_CS_PIN 4
 #define CFG_CC1101_GPIO_GDO0_DRV_NAME "GPIOA"
-#define CFG_CC1101_GPIO_GDO0_PIN 2
+#define CFG_CC1101_GPIO_GDO0_PIN 12
 #define CFG_CC1101_GPIO_GDO1_DRV_NAME "GPIOA"
-#define CFG_CC1101_GPIO_GDO1_PIN 1
+#define CFG_CC1101_GPIO_GDO1_PIN 11
 
 static struct spi_cs_control            cs_ctrl;
 static struct cc1101_gpio_configuration gpios[CC1101_GPIO_IDX_MAX];
