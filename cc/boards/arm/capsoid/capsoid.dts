@@ -56,6 +56,15 @@
 
 &spi2 {
 	status = "okay";
+    /* Why second slave select??? */
+    bme280@2 {
+        compatible = "bosch,bme280";
+        reg = <2>;
+        spi-max-frequency = <10000000>;
+        label = "BME280";
+        status = "okay";
+    };
+
 };
 
 &timers1 {
