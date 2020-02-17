@@ -28,6 +28,8 @@ add_custom_target(tags
     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
 
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 file(CREATE_LINK ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json ${CMAKE_CURRENT_SOURCE_DIR}/src/compile_commands.json SYMBOLIC)
 
 #list (SORT _variableNames)
