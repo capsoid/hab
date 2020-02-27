@@ -6,36 +6,42 @@
 
 #include <zephyr.h>
 
-#include <kernel.h>
 #include <device.h>
+#include <i2c.h>
+#include <kernel.h>
 #include <misc/__assert.h>
 #include <misc/printk.h>
 #include <sensor.h>
 #include <shell/shell.h>
 #include <spi.h>
-#include <i2c.h>
+#include <uart.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "minmea.h"
 
 #include "cc1101.h"
 #include "ieee802154_cc1101.h"
 
-#define PR(fmt, ...)						\
+#define PR(fmt, ...) \
     shell_fprintf(shell, SHELL_NORMAL, fmt, ##__VA_ARGS__)
-#define PR_ERROR(fmt, ...)					\
+#define PR_ERROR(fmt, ...) \
     shell_fprintf(shell, SHELL_ERROR, fmt, ##__VA_ARGS__)
-#define PR_INFO(fmt, ...)					\
+#define PR_INFO(fmt, ...) \
     shell_fprintf(shell, SHELL_INFO, fmt, ##__VA_ARGS__)
-#define PR_WARNING(fmt, ...)					\
+#define PR_WARNING(fmt, ...) \
     shell_fprintf(shell, SHELL_WARNING, fmt, ##__VA_ARGS__)
 
-struct device *bme280;
-struct device *mpu6050;
-struct device *cc1101;
+struct device* bme280;
+struct device* mpu6050;
+struct device* cc1101;
+struct device* gps;
 
 void main(void)
 {
     int ret;
+
+    printk("KEK %f\n", NAN);
 
     printk("[%s  %s] Hello World from %s!\n", __DATE__, __TIME__, CONFIG_BOARD);
 
@@ -58,10 +64,15 @@ void main(void)
     }
     else
     {
-        ret = cc1101_start(cc1101);           __ASSERT_NO_MSG(!ret);
-        ret = cc1101_set_txpower(cc1101, 10); __ASSERT_NO_MSG(!ret);
-        ret = cc1101_set_channel(cc1101, 0);  __ASSERT_NO_MSG(!ret);
+        ret = cc1101_start(cc1101);
+        __ASSERT_NO_MSG(!ret);
+        ret = cc1101_set_txpower(cc1101, 10);
+        __ASSERT_NO_MSG(!ret);
+        ret = cc1101_set_channel(cc1101, 0);
+        __ASSERT_NO_MSG(!ret);
     }
+
+
 
     //__ASSERT(0, "fail\n");
 
@@ -71,28 +82,30 @@ void main(void)
     }
 }
 
-static int cmd_mpu6050_reset(const struct shell *shell, size_t argc, char **argv)
+static int cmd_mpu6050_reset(const struct shell* shell, size_t argc, char** argv)
 {
-       struct device *i2c = device_get_binding("I2C_1");
-       __ASSERT_NO_MSG(i2c);
+    struct device* i2c = device_get_binding("I2C_1");
+    __ASSERT_NO_MSG(i2c);
 
-       if (i2c_reg_write_byte(i2c, 0x68, 0x6B, 0x80) < 0) {
-           printk("Failed to wake up chip.");
-       }
-       /*
+    if (i2c_reg_write_byte(i2c, 0x68, 0x6B, 0x80) < 0)
+    {
+        printk("Failed to wake up chip.");
+    }
+    /*
        k_busy_wait(100);
        u8_t v;
        if (i2c_reg_read_byte(i2c, 0x68, 0x6B, &v) < 0) {
            printk("Failed to wake up chip.");
        }
        */
-       k_sleep(10);
+    k_sleep(10);
 
-       if (i2c_reg_write_byte(i2c, 0x68, 0x6B, 0x00) < 0) {
-           printk("Failed to wake up chip.");
-       }
+    if (i2c_reg_write_byte(i2c, 0x68, 0x6B, 0x00) < 0)
+    {
+        printk("Failed to wake up chip.");
+    }
 
-       return 0;
+    return 0;
 }
 
 static int cmd_mpu6050_read(const struct shell *shell, size_t argc, char **argv)
@@ -256,6 +269,15 @@ static int cmd_cc1101_channel(const struct shell *shell, size_t argc, char **arg
     return 0;
 }
 
+static int cmd_read_gps_data(const struct shell *shell, size_t argc, char **argv)
+{
+
+
+
+    return 0;
+}
+
+
 SHELL_CREATE_STATIC_SUBCMD_SET(mpu6050_commands)
 {
     SHELL_CMD(read, NULL, "read mpu6050", cmd_mpu6050_read),
@@ -282,6 +304,13 @@ SHELL_CREATE_STATIC_SUBCMD_SET(cc1101_commands)
     SHELL_SUBCMD_SET_END
 };
 
+SHELL_CREATE_STATIC_SUBCMD_SET(gps_commands)
+{
+    SHELL_CMD(read, NULL, "read gps data", cmd_read_gps_data),
+    SHELL_SUBCMD_SET_END
+};
+
 SHELL_CMD_REGISTER(bme280, &bme280_commands, "Control RF chip.", NULL);
 SHELL_CMD_REGISTER(cc1101, &cc1101_commands, "Read pressure/temperature/humidity", NULL);
 SHELL_CMD_REGISTER(mpu6050, &mpu6050_commands, "Read mpu6050", NULL);
+SHELL_CMD_REGISTER(gps, &gps_commands, "Read gps data", NULL);

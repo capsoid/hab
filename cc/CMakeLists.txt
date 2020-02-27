@@ -11,7 +11,7 @@ set(ZEPHYR_MODULES $ENV{ZEPHYR_MODULES})
 include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
 project(capsoid_controller)
 
-target_sources(app PRIVATE src/main.c src/ieee802154_cc1101.c src/cc1101.c)
+target_sources(app PRIVATE src/main.c src/ieee802154_cc1101.c src/cc1101.c src/minmea.c)
 
 include_directories(src)
 
@@ -30,7 +30,7 @@ add_custom_target(tags
 
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-file(CREATE_LINK ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json ${CMAKE_CURRENT_SOURCE_DIR}/src/compile_commands.json SYMBOLIC)
+file(CREATE_LINK ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json SYMBOLIC)
 
 #list (SORT _variableNames)
 #foreach (_variableName ${_variableNames})
