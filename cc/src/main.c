@@ -19,6 +19,7 @@
 #include <stdlib.h>
 
 #include "minmea.h"
+#include "neo_6m.h"
 
 #include "cc1101.h"
 #include "ieee802154_cc1101.h"
@@ -35,13 +36,12 @@
 struct device* bme280;
 struct device* mpu6050;
 struct device* cc1101;
-struct device* gps;
+struct device* neo_6m;
 
 void main(void)
 {
     int ret;
 
-    printk("KEK %f\n", NAN);
 
     printk("[%s  %s] Hello World from %s!\n", __DATE__, __TIME__, CONFIG_BOARD);
 
@@ -55,6 +55,12 @@ void main(void)
     if (!mpu6050)
     {
         printk("Failed to init MPU6050!\n");
+    }
+
+    neo_6m = device_get_binding("NEO_6M");
+    if (!neo_6m)
+    {
+        printk("Failed to init NEO_6M!\n");
     }
 
     cc1101 = device_get_binding("CC1101");
@@ -71,8 +77,6 @@ void main(void)
         ret = cc1101_set_channel(cc1101, 0);
         __ASSERT_NO_MSG(!ret);
     }
-
-
 
     //__ASSERT(0, "fail\n");
 
@@ -269,10 +273,14 @@ static int cmd_cc1101_channel(const struct shell *shell, size_t argc, char **arg
     return 0;
 }
 
-static int cmd_read_gps_data(const struct shell *shell, size_t argc, char **argv)
+static int cmd_neo_6m_read_data(const struct shell *shell, size_t argc, char **argv)
 {
+    int size = 10;
+    char buffer[10] = {0};
 
+    int status = neo_6m_read_gps_data(neo_6m, buffer, size);
 
+    PR("I have read this shit from GPS: %s\n", buffer);
 
     return 0;
 }
@@ -304,13 +312,13 @@ SHELL_CREATE_STATIC_SUBCMD_SET(cc1101_commands)
     SHELL_SUBCMD_SET_END
 };
 
-SHELL_CREATE_STATIC_SUBCMD_SET(gps_commands)
+SHELL_CREATE_STATIC_SUBCMD_SET(neo_6m_commands)
 {
-    SHELL_CMD(read, NULL, "read gps data", cmd_read_gps_data),
+    SHELL_CMD(read, NULL, "read gps data", cmd_neo_6m_read_data),
     SHELL_SUBCMD_SET_END
 };
 
 SHELL_CMD_REGISTER(bme280, &bme280_commands, "Control RF chip.", NULL);
 SHELL_CMD_REGISTER(cc1101, &cc1101_commands, "Read pressure/temperature/humidity", NULL);
 SHELL_CMD_REGISTER(mpu6050, &mpu6050_commands, "Read mpu6050", NULL);
-SHELL_CMD_REGISTER(gps, &gps_commands, "Read gps data", NULL);
+SHELL_CMD_REGISTER(neo_6m, &neo_6m_commands, "Read gps data", NULL);

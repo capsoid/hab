@@ -11,7 +11,12 @@ set(ZEPHYR_MODULES $ENV{ZEPHYR_MODULES})
 include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
 project(capsoid_controller)
 
-target_sources(app PRIVATE src/main.c src/ieee802154_cc1101.c src/cc1101.c src/minmea.c)
+target_sources(app PRIVATE
+    src/main.c
+    src/ieee802154_cc1101.c
+    src/cc1101.c
+    src/minmea.c
+    src/neo_6m.c)
 
 include_directories(src)
 
