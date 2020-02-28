@@ -1,20 +1,8 @@
+#include "neo_6m.h"
 #include <device.h>
 #include <errno.h>
 #include <logging/log.h>
 #include <uart.h>
-
-#define CONFIG_UART_DEVICE     "UART_3"
-#define CONFIG_NEO_6M_DRV_NAME "NEO_6M"
-
-LOG_MODULE_REGISTER(NEO_6M, CONFIG_LOG_LEVEL_DBG);
-
-struct neo_6m_data
-{
-    struct device *uart;
-    struct uart_config uart_config;
-};
-
-static struct neo_6m_data neo_6m_data;
 
 int neo_6m_uart_init(struct neo_6m_data *data)
 {
@@ -53,15 +41,13 @@ int neo_6m_read_uart(struct neo_6m_data *data, unsigned char *buffer, unsigned i
 {
     for (int i = size; i > 0; i--)
     {
-        int status = uart_poll_in(data->uart, buffer + i);
-
-        LOG_DBG("GPS read status: %d \t GPS read symbol: %c", status, buffer[i]);
-
-        if (status != 0)
+        int status = -1;
+        while (!status)
         {
-            return -EBUSY;
+            status = uart_poll_in(data->uart, buffer + i);
         }
     }
+
     return 0;
 }
 
@@ -77,7 +63,7 @@ DEVICE_AND_API_INIT(
     CONFIG_NEO_6M_DRV_NAME,
     neo_6m_init,
     &neo_6m_data,
-    (void *) 1488,
+    (void *)1488,
     POST_KERNEL,
     45,
-    (void*) 228);
+    (void *)228);
