@@ -19,3 +19,6 @@ int neo_6m_init(struct device *device);
 int neo_6m_read_gps_data(struct device *device, unsigned char *buffer, unsigned int size);
 int neo_6m_read_uart(struct neo_6m_data *data, unsigned char *buffer, unsigned int size);
 int neo_6m_uart_init(struct neo_6m_data *data);
+int neo_6m_read_gps_message(unsigned char *buffer, unsigned int size);
+static void uart_read_isr(struct device *device);
+static int uart_read_symbol(struct device *device, char *symbol);

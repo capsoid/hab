@@ -275,12 +275,12 @@ static int cmd_cc1101_channel(const struct shell *shell, size_t argc, char **arg
 
 static int cmd_neo_6m_read_data(const struct shell *shell, size_t argc, char **argv)
 {
-    int size = 10;
-    char buffer[10] = {0};
+    int size = 128;
+    char buffer[128] = {0};
 
-    int status = neo_6m_read_gps_data(neo_6m, buffer, size);
+    neo_6m_read_gps_message(buffer, size);
 
-    PR("I have read this shit from GPS: %s\n", buffer);
+    PR("I have read this shit from GPS: %s \n", buffer);
 
     return 0;
 }
