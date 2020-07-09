@@ -7,7 +7,8 @@
 
 #define NMEA_BUFFER_SIZE 128
 
-RING_BUF_DECLARE(uart_buffer, NMEA_BUFFER_SIZE);
+static volatile char message[NMEA_BUFFER_SIZE];
+static volatile bool has_valid_data;
 
 int neo_6m_uart_init(struct neo_6m_data *data)
 {
@@ -90,6 +91,12 @@ static int uart_read_symbol(struct device *device, char *symbol)
 
 static void uart_read_isr(struct device *device)
 {
+
+    static bool start_of_frame = false;
+    static bool end_of_frame = false;
+    static int i = 0;
+    static char prev;
+
     while (uart_irq_update(device) && uart_irq_is_pending(device))
     {
         if (!uart_irq_rx_ready(device))
@@ -105,8 +112,35 @@ static void uart_read_isr(struct device *device)
             return;
         }
 
-        ring_buf_put(&uart_buffer, &symbol, 1);
+        if(has_valid_data)
+        {
+            return;
+        }
 
+        if(symbol == '$')
+        {
+            start_of_frame = true;
+        }
+
+        if(symbol == '\n' && prev == '\r')
+        {
+            end_of_frame = true;
+        }
+
+        if(start_of_frame && !end_of_frame)
+        {
+            message[i++] = symbol;
+        }
+        else if (start_of_frame && end_of_frame)
+        {
+            message[i++] = symbol;
+            start_of_frame = false;
+            end_of_frame = false;
+            has_valid_data = true;
+            i = 0;
+        }
+
+        prev = symbol;
     }
 }
 
@@ -117,51 +151,17 @@ int neo_6m_read_gps_data(struct device *device, unsigned char *buffer, unsigned 
     return neo_6m_read_uart_batch(data, buffer, size);
 }
 
-int neo_6m_read_gps_message(unsigned char *buffer, unsigned int size)
+int neo_6m_read_gps_message(char *buffer, unsigned int size)
 {
+    while(!has_valid_data);
 
-    int i = 0;
-    char current = 0;
-    char prev = 0;
+    memcpy(buffer, message, sizeof(message));
 
-    do
-    {
-        int nbytes = ring_buf_get(&uart_buffer, &current, 1);
+    memset(message, '\0', sizeof(message));
 
-        if (nbytes < 1)
-        {
-            continue;
-        }
+    has_valid_data = false;
 
-        if(current == '$')
-        {
-            buffer[i++] = current;
-            break;
-        }
-
-    } while(true);
-
-    do
-    {
-        prev = current;
-
-        int nbytes = ring_buf_get(&uart_buffer, &current, 1);
-
-        if (nbytes < 1)
-        {
-            continue;
-        }
-
-        buffer[i++] = current;
-
-        if (prev == '\r' && current == '\n')
-        {
-            return 0;
-        }
-
-    } while (true);
-
-    printk("The whole buffer is %s\n", buffer);
+    return 0
 }
 
 DEVICE_AND_API_INIT(
