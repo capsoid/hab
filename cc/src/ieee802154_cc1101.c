@@ -825,4 +825,11 @@ static int cc1101_init(struct device *dev)
     return 0;
 }
 
-DEVICE_AND_API_INIT(cc1101, CFG_CC1101_DRV_NAME, cc1101_init, &cc1101_context, (void *)42, APPLICATION, 0, (void *)43);
+DEVICE_AND_API_INIT(cc1101,
+                    CFG_CC1101_DRV_NAME,
+                    cc1101_init,
+                    &cc1101_context,
+                    (void *)42,
+                    APPLICATION,
+                    0,
+                    (void *)43);
